@@ -143,13 +143,18 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GifViewer.cpp" />
+    <ClCompile Include="ImageViewer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="WindowSurface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h" />
+    <ClInclude Include="Converter.h" />
     <ClInclude Include="DisplayParams.h" />
+    <ClInclude Include="GifViewer.h" />
+    <ClInclude Include="ImageViewer.h" />
     <ClInclude Include="MainWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

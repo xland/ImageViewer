@@ -24,6 +24,12 @@
     <ClCompile Include="WindowSurface.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ImageViewer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GifViewer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainWindow.h">
@@ -33,6 +39,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Color.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageViewer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GifViewer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Converter.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

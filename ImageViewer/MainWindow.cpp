@@ -1,14 +1,16 @@
 #include "MainWindow.h"
 #include <Windows.h>
 #include <windowsx.h>
+#include <locale>
 #include <string>
 #include "include/core/SkCanvas.h"
-#include "include/core/SkSurface.h"
 #include "include/core/SkImage.h"
 #include "include/core/SkStream.h"
 #include "include/core/SkPicture.h"
 #include "include/codec/SkCodec.h"
+#include "GifViewer.h"
 #include "Color.h"
+#include "Converter.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -35,11 +37,13 @@ MainWindow::MainWindow(HINSTANCE hinstance):hinstance{hinstance}
 		return;
 	}		
 	initSurface();
+	auto path = ConvertWideToUtf8(L"C:\\Users\\liuxiaolun\\Desktop\\ͼƬ\\gif.gif");
+	imageViewer = ImageViewer::MakeImageViewer(path.c_str(),this);
 	ShowWindow(hwnd, SW_SHOW);
 }
 MainWindow::~MainWindow()
 {
-
+	disposeSurfaceResource();
 }
 bool MainWindow::creatreNativeWindow()
 {
@@ -83,67 +87,51 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 {
 	PAINTSTRUCT ps;
 	switch (msg) {
-	case WM_PAINT:
-		BeginPaint(hwnd, &ps);
-		paint();
-		EndPaint(hwnd, &ps);
-	case WM_NCCALCSIZE: {
-		return DefWindowProc(hwnd, msg, wParam, lParam);
-	}
-	case WM_GETMINMAXINFO: {
-		MINMAXINFO* mminfo;
-		mminfo = (PMINMAXINFO)lParam;
-		mminfo->ptMinTrackSize.x = minWidth;
-		mminfo->ptMinTrackSize.y = minHeight;
-		mminfo->ptMaxPosition.x = 0;
-		mminfo->ptMaxPosition.y = 0;
-		return 0;
-	}
-	case WM_SIZE: {
-		clientWidth = LOWORD(lParam);
-		clientHeight = HIWORD(lParam);
-		return 0;
-	}
-	case WM_MOUSEMOVE: {
-		auto x = GET_X_LPARAM(lParam);
-		auto y = GET_Y_LPARAM(lParam);
-	}
+		case WM_CLOSE:
+		{
+			PostQuitMessage(0);
+		}
+		case WM_PAINT:
+		{
+			BeginPaint(hwnd, &ps);
+			paint();
+			EndPaint(hwnd, &ps);
+		}
+		case WM_NCCALCSIZE: 
+		{
+			return DefWindowProc(hwnd, msg, wParam, lParam);
+		}
+		case WM_GETMINMAXINFO: 
+		{
+			MINMAXINFO* mminfo;
+			mminfo = (PMINMAXINFO)lParam;
+			mminfo->ptMinTrackSize.x = minWidth;
+			mminfo->ptMinTrackSize.y = minHeight;
+			mminfo->ptMaxPosition.x = 0;
+			mminfo->ptMaxPosition.y = 0;
+			return 0;
+		}
+		case WM_SIZE: {
+			clientWidth = LOWORD(lParam);
+			clientHeight = HIWORD(lParam);
+			return 0;
+		}
+		case WM_MOUSEMOVE: 
+		{
+			auto x = GET_X_LPARAM(lParam);
+			auto y = GET_Y_LPARAM(lParam);
+		}
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 void MainWindow::paint()
 {
-	SkSurface* surface = getSurface();
+	auto surface = getSurface();
 	auto canvas = surface->getCanvas();
 	canvas->clear(ColorWhite);
-
-	std::string filePath = "";
-	SkFILEStream fileStream(filePath.c_str());
-	auto skData = SkData::MakeFromFileName("C:\\Users\\liuxiaolun\\Pictures\\gif.gif");
-	auto skImage = SkImage::MakeFromEncoded(skData);
-	std::unique_ptr<SkCodec> codec = SkCodec::MakeFromData(skData);
-	if (!codec) {
-		return;
-	}
-	SkString ext;
-	switch (codec->getEncodedFormat()) {
-	case SkEncodedImageFormat::kBMP:  ext = "bmp"; break;
-	case SkEncodedImageFormat::kGIF:  ext = "gif"; break;
-	case SkEncodedImageFormat::kICO:  ext = "ico"; break;
-	case SkEncodedImageFormat::kJPEG: ext = "jpg"; break;
-	case SkEncodedImageFormat::kPNG:  ext = "png"; break;
-	case SkEncodedImageFormat::kDNG:  ext = "dng"; break;
-	case SkEncodedImageFormat::kWBMP: ext = "wbmp"; break;
-	case SkEncodedImageFormat::kWEBP: ext = "webp"; break;
-	default:
-		// This should be unreachable because we cannot create a codec if we do not know
-		// the image type.
-		SkASSERT(false);
-	}
-	canvas->drawImage(skImage, 0, 0);
+	imageViewer->Paint(canvas);
 	surface->flushAndSubmit();
 	HDC dc = GetDC(hwnd);
 	SwapBuffers(dc);
 	ReleaseDC(hwnd, dc);
-	delete surface;
 }

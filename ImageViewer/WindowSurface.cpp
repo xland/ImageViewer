@@ -41,7 +41,7 @@ void MainWindow::initSurface()
     directContext = context.release();
 }
 
-SkSurface* MainWindow::getSurface()
+sk_sp<SkSurface> MainWindow::getSurface()
 {
     glViewport(0, 0,clientWidth, clientHeight);
     GrGLint buffer;
@@ -55,7 +55,7 @@ SkSurface* MainWindow::getSurface()
         kRGBA_8888_SkColorType,
         displayParam.fColorSpace,
         &displayParam.fSurfaceProps);
-    return fSurface.release();
+    return fSurface;
 }
 void MainWindow::disposeSurfaceResource()
 {
