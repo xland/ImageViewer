@@ -14,13 +14,12 @@ public:
 	
 private:
 	void animateThread();
-	unsigned frameCount{ 0 };
+	void decodeGifFrame(std::unique_ptr<SkCodec> _codec);
+	int frameCount{ 0 };
+	unsigned currentFrame{ 0 };
 	std::vector<int> durations;
-	std::shared_ptr<SkBitmap> bitmap;
-	SkImageInfo imageInfo;
-	std::unique_ptr<SkCodec> codec;
-	std::shared_ptr<SkCodec::Options> option;
-	bool running{ false };
+	std::vector<sk_sp<SkImage>> frameImages;
+	bool running{ true };
 	std::shared_future<void> animateThreadResult;
 };
 

@@ -10,6 +10,9 @@ public:
 	MainWindow(HINSTANCE hinstance);
 	~MainWindow();
 	HWND hwnd{ nullptr };
+	unsigned clientWidth{ 0 };
+	unsigned clientHeight{ 0 };
+	unsigned toolBarHeight{ 60 };
 private:
 	friend LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	bool creatreNativeWindow();
@@ -27,8 +30,6 @@ private:
 	unsigned height{ 700 };
 	unsigned minWidth{ 800 };
 	unsigned minHeight{ 600 };
-	unsigned clientWidth{ 0 };
-	unsigned clientHeight{ 0 };
 	std::shared_ptr<ImageViewer> imageViewer;
 };
 

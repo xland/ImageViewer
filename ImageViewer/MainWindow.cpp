@@ -37,7 +37,7 @@ MainWindow::MainWindow(HINSTANCE hinstance):hinstance{hinstance}
 		return;
 	}		
 	initSurface();
-	auto path = ConvertWideToUtf8(L"C:\\Users\\liuxiaolun\\Desktop\\ͼƬ\\gif.gif");
+	auto path = ConvertWideToUtf8(L"D:\\gif\\gif2.gif");
 	imageViewer = ImageViewer::MakeImageViewer(path.c_str(),this);
 	ShowWindow(hwnd, SW_SHOW);
 }
