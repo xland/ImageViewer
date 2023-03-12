@@ -37,7 +37,7 @@ MainWindow::MainWindow(HINSTANCE hinstance):hinstance{hinstance}
 		return;
 	}		
 	initSurface();
-	auto path = ConvertWideToUtf8(L"D:\\gif\\gif2.gif");
+	auto path = ConvertWideToUtf8(L"D:\\gif\\123.jpg");//D:\\gif\\gif2.gif D:\\gif\\c.jpg
 	imageViewer = ImageViewer::MakeImageViewer(path.c_str(),this);
 	ShowWindow(hwnd, SW_SHOW);
 }

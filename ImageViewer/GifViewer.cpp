@@ -15,8 +15,8 @@ GifViewer::~GifViewer()
 void GifViewer::Paint(SkCanvas* canvas)
 {
     if (frameImages.empty()) return;
-    auto [x, y] = CaculatePosition(frameImages[currentFrame]);
-    canvas->drawImage(frameImages[currentFrame], x, y);
+    //auto [x, y] = CaculatePosition(frameImages[currentFrame]);
+    //canvas->drawImage(frameImages[currentFrame], x, y);
 }
 void GifViewer::DecodeGif(std::unique_ptr<SkCodec> _codec)
 {

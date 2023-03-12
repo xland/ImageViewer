@@ -9,18 +9,62 @@ ImageViewer::~ImageViewer()
 {
 
 }
-std::pair<unsigned, unsigned> ImageViewer::CaculatePosition(sk_sp<SkImage> image)
+SkRect ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 {
-	int x = (win->clientWidth - image->width()) / 2;
-	int y = (win->clientHeight - win->toolBarHeight - image->height()) / 2;
-	if (x < 0) x = 0;
-	if (y < 0) y = 0;
-	return { x,y };
+	SkRect result;
+	auto imageWidth = (float)image->width();
+	auto imageHeight = (float)image->height();
+	auto clientWidth = (float)win->clientWidth;
+	auto clientHeight = (float)(win->clientHeight - win->toolBarHeight);
+	float x=0.f, y = 0.f, w = 0.f, h = 0.f;
+	if (imageHeight > clientHeight && imageWidth > clientWidth)
+	{
+		auto heightRatio = imageHeight / clientHeight;
+		auto widthRatio = imageWidth / clientWidth;
+		if (heightRatio > widthRatio) {
+			h = clientHeight;
+			w = imageWidth / heightRatio;
+			y = 0;
+			x = (clientWidth - w) / 2;
+		}
+		else
+		{
+			h = imageHeight/widthRatio;
+			w = clientWidth;
+			y = (clientHeight - h)/2;
+			x = 0;
+		}
+	}
+	else if (imageHeight > clientHeight && imageWidth <= clientWidth)
+	{
+		float heightRatio = imageHeight / clientHeight;
+		h = clientHeight;
+		w = imageWidth / heightRatio;
+		y = 0;
+		x = (clientWidth - w) / 2;
+	}
+	else if (imageHeight <= clientHeight && imageWidth > clientWidth) {
+		auto widthRatio = imageWidth / clientWidth;
+		h = imageHeight / widthRatio;
+		w = clientWidth;
+		y = (clientHeight - h) / 2;
+		x = 0;
+	}
+	else
+	{
+		x = (clientWidth - imageWidth) / 2;
+		y = (clientHeight - imageHeight) / 2;
+		w = imageWidth;
+		h = imageHeight;
+	}
+	result.setXYWH(x, y, w, h);
+	return result;
 }
 void ImageViewer::Paint(SkCanvas* canvas)
 {
-	auto [x,y] = CaculatePosition(image);
-	canvas->drawImage(image, x, y);
+	auto rect = CaculatePosition(image);
+	SkSamplingOptions option;
+	canvas->drawImageRect(image, rect,option);
 }
 
 std::shared_ptr<ImageViewer> ImageViewer::MakeImageViewer(const char* path,MainWindow* win)
