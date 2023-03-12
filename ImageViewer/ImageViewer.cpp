@@ -15,7 +15,7 @@ SkRect ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 	auto imageWidth = (float)image->width();
 	auto imageHeight = (float)image->height();
 	auto clientWidth = (float)win->clientWidth;
-	auto clientHeight = (float)(win->clientHeight - win->toolBarHeight);
+	auto clientHeight = (float)(win->clientHeight - win->bottomBarHeight);
 	float x=0.f, y = 0.f, w = 0.f, h = 0.f;
 	if (imageHeight > clientHeight && imageWidth > clientWidth)
 	{
@@ -63,7 +63,7 @@ SkRect ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 void ImageViewer::Paint(SkCanvas* canvas)
 {
 	auto rect = CaculatePosition(image);
-	SkSamplingOptions option;
+	SkSamplingOptions option(SkFilterMode::kNearest, SkMipmapMode::kLinear);
 	canvas->drawImageRect(image, rect,option);
 }
 

@@ -143,6 +143,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BottomBar.cpp" />
     <ClCompile Include="GifViewer.cpp" />
     <ClCompile Include="ImageViewer.cpp" />
     <ClCompile Include="main.cpp" />
@@ -150,12 +151,20 @@
     <ClCompile Include="WindowSurface.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BottomBar.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="DisplayParams.h" />
     <ClInclude Include="GifViewer.h" />
     <ClInclude Include="ImageViewer.h" />
     <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="button.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ImageViewer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include "include/core/SkSurface.h"
 #include "ImageViewer.h"
+#include "BottomBar.h"
 struct GrGLInterface;
 class GrDirectContext;
 class MainWindow
@@ -12,7 +13,8 @@ public:
 	HWND hwnd{ nullptr };
 	unsigned clientWidth{ 0 };
 	unsigned clientHeight{ 0 };
-	unsigned toolBarHeight{ 60 };
+	unsigned bottomBarHeight{ 60 };
+	HINSTANCE hinstance;
 private:
 	friend LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	bool creatreNativeWindow();
@@ -25,11 +27,11 @@ private:
 	HGLRC hglrc{ nullptr };
 	const GrGLInterface* backendContext{ nullptr };
 	GrDirectContext* directContext{ nullptr };
-	HINSTANCE hinstance;
 	unsigned width{ 1000 };
 	unsigned height{ 700 };
 	unsigned minWidth{ 800 };
 	unsigned minHeight{ 600 };
 	std::shared_ptr<ImageViewer> imageViewer;
+	std::unique_ptr<BottomBar> bottomBar;
 };
 

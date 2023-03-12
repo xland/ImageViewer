@@ -30,6 +30,9 @@
     <ClCompile Include="GifViewer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="BottomBar.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainWindow.h">
@@ -50,5 +53,19 @@
     <ClInclude Include="Converter.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="BottomBar.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="button.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ImageViewer.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-#include "MainWindow.h"
+﻿#include "MainWindow.h"
 #include <Windows.h>
 #include <windowsx.h>
 #include <locale>
@@ -37,8 +37,9 @@ MainWindow::MainWindow(HINSTANCE hinstance):hinstance{hinstance}
 		return;
 	}		
 	initSurface();
-	auto path = ConvertWideToUtf8(L"D:\\gif\\123.jpg");//D:\\gif\\gif2.gif D:\\gif\\c.jpg
+	auto path = ConvertWideToUtf8(L"C:\\Users\\liuxiaolun\\Desktop\\图片\\girl.jpg");//D:\\gif\\gif2.gif D:\\gif\\c.jpg
 	imageViewer = ImageViewer::MakeImageViewer(path.c_str(),this);
+	bottomBar = std::make_unique<BottomBar>(this);
 	ShowWindow(hwnd, SW_SHOW);
 }
 MainWindow::~MainWindow()
@@ -120,6 +121,8 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		{
 			auto x = GET_X_LPARAM(lParam);
 			auto y = GET_Y_LPARAM(lParam);
+			bottomBar->CheckMouseEnter(x, y);
+			return 0;
 		}
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -128,8 +131,9 @@ void MainWindow::paint()
 {
 	auto surface = getSurface();
 	auto canvas = surface->getCanvas();
-	canvas->clear(ColorWhite);
+	canvas->clear(GetColor(248,248,248));
 	imageViewer->Paint(canvas);
+	bottomBar->Paint(canvas);
 	surface->flushAndSubmit();
 	HDC dc = GetDC(hwnd);
 	SwapBuffers(dc);
