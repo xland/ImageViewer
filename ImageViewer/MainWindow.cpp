@@ -140,4 +140,34 @@ void MainWindow::paint()
 	HDC dc = GetDC(hwnd);
 	SwapBuffers(dc);
 	ReleaseDC(hwnd, dc);
+
+
+	//var canvas = new SKCanvas(signatureBitmap);
+	//var origin = new SKPoint();
+	//var paint = new SKPaint
+	//{
+	//	TextSize = 10,
+	//	IsAntialias = true,
+	//	Color = SKColors.Black,
+	//	IsStroke = false
+	//};
+	//origin.X = 10;
+	//origin.Y = 30;
+	//paint.TextAlign = SKTextAlign.Left;
+	//canvas.DrawText("text", origin, paint);
+	//canvas.Flush();
+	//var resultImage = SKImage.FromBitmap(signatureBitmap);
+
+
+
+	//void draw(SkCanvas * canvas) {
+	//	canvas->clear(SK_ColorWHITE);
+	//	SkMatrix matrix;
+	//	matrix.setScale(0.75f, 0.75f);
+	//	matrix.preRotate(30.0f);
+	//	SkPaint paint;
+	//	paint.setShader(image->makeShader(SkTileMode::kRepeat, SkTileMode::kRepeat,
+	//		SkSamplingOptions(), matrix));
+	//	canvas->drawPaint(paint);
+	//}
 }
