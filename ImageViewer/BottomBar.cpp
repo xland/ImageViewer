@@ -25,10 +25,6 @@ BottomBar::~BottomBar()
 {
 
 }
-void BottomBar::paintBtn(const char* btn, float& x, float& y, SkPaint& paint)
-{
-
-}
 void BottomBar::CheckMouseEnter(int mouseX, int mouseY)
 {
 	int index = -2;
@@ -59,17 +55,16 @@ void BottomBar::Paint(SkCanvas* canvas)
 	paint.setColor(ColorBlack);
 	paint.setAntiAlias(true);
 	float tempX = x + fontSize;
-	canvas->drawString((const char*)u8"\ue6bf", tempX, tempY, *font.get(), paint);
-	tempX = x+ btnWidth;
-	canvas->drawString((const char*)u8"\ue6ad", tempX, tempY, *font.get(), paint);
-	tempX += btnWidth;
-	canvas->drawString((const char*)u8"\ue6bd", tempX, tempY, *font.get(), paint);
-	tempX += btnWidth;
-	canvas->drawString((const char*)u8"\ue6c0", tempX, tempY, *font.get(), paint);
-	tempX += btnWidth;
-	canvas->drawString((const char*)u8"\ue6be", tempX, tempY, *font.get(), paint);
-	tempX += btnWidth;
-	canvas->drawString((const char*)u8"\ue6c2", tempX, tempY, *font.get(), paint);
-	tempX += btnWidth;
-	canvas->drawString((const char*)u8"\ue6c1", tempX, tempY, *font.get(), paint);
+	for (size_t i = 0; i < btnCodes.size(); i++)
+	{
+		if (i == mouseEnterIndex) {
+			paint.setColor(GetColor(230,230,230));
+			SkRect rect;
+			rect.setXYWH(tempX-fontSize, y, btnWidth, (float)win->bottomBarHeight);
+			canvas->drawRect(rect, paint);
+			paint.setColor(ColorBlack);
+		}
+		canvas->drawString(btnCodes[i], tempX, tempY, *font.get(), paint);
+		tempX += btnWidth;
+	}
 }

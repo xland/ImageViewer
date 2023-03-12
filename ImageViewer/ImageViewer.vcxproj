@@ -148,6 +148,7 @@
     <ClCompile Include="ImageViewer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="NavigateBar.cpp" />
     <ClCompile Include="WindowSurface.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +159,7 @@
     <ClInclude Include="GifViewer.h" />
     <ClInclude Include="ImageViewer.h" />
     <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="NavigateBar.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
