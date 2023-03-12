@@ -4,22 +4,10 @@
 #include "include/core/SkFont.h"
 #include "resource.h"
 #include <math.h>
+#include "IconFont.h"
 BottomBar::BottomBar(MainWindow* win):win{win}
 {
-	HMODULE instance = GetModuleHandle(NULL);
-	HRSRC resID = FindResource(instance, MAKEINTRESOURCE(IDR_BTNFONT1), L"BTNFONT");
-	if (resID == 0) {
-		return;
-	}
-	size_t resSize = SizeofResource(instance, resID);
-	HGLOBAL res = LoadResource(instance, resID);
-	if (res == 0) {
-		return;
-	}
-	void* resPointer = LockResource(res);
-	auto fontData = SkData::MakeWithoutCopy(resPointer,resSize);
-	auto fontTypeFace = SkTypeface::MakeFromData(fontData);
-	font = std::make_unique<SkFont>(fontTypeFace, fontSize);
+	
 }
 BottomBar::~BottomBar()
 {
@@ -55,6 +43,8 @@ void BottomBar::Paint(SkCanvas* canvas)
 	paint.setColor(ColorBlack);
 	paint.setAntiAlias(true);
 	float tempX = x + fontSize;
+	auto font = IconFont::Get();
+	font->setSize(fontSize);
 	for (size_t i = 0; i < btnCodes.size(); i++)
 	{
 		if (i == mouseEnterIndex) {
@@ -64,7 +54,7 @@ void BottomBar::Paint(SkCanvas* canvas)
 			canvas->drawRect(rect, paint);
 			paint.setColor(ColorBlack);
 		}
-		canvas->drawString(btnCodes[i], tempX, tempY, *font.get(), paint);
+		canvas->drawString(btnCodes[i], tempX, tempY, *font, paint);
 		tempX += btnWidth;
 	}
 }

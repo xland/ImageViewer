@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="BottomBar.cpp" />
     <ClCompile Include="GifViewer.cpp" />
+    <ClCompile Include="IconFont.cpp" />
     <ClCompile Include="ImageViewer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="Converter.h" />
     <ClInclude Include="DisplayParams.h" />
     <ClInclude Include="GifViewer.h" />
+    <ClInclude Include="IconFont.h" />
     <ClInclude Include="ImageViewer.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="NavigateBar.h" />

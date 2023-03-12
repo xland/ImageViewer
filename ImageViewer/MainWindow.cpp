@@ -11,6 +11,7 @@
 #include "GifViewer.h"
 #include "Color.h"
 #include "Converter.h"
+#include "IconFont.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -35,7 +36,8 @@ MainWindow::MainWindow(HINSTANCE hinstance):hinstance{hinstance}
 	if (!flag || !hwnd) {
 		//todo error
 		return;
-	}		
+	}	
+	IconFont::Init();
 	initSurface();
 	auto path = ConvertWideToUtf8(L"C:\\Users\\liuxiaolun\\Desktop\\图片\\girl.jpg");//D:\\gif\\gif2.gif D:\\gif\\c.jpg
 	imageViewer = ImageViewer::MakeImageViewer(path.c_str(),this);
