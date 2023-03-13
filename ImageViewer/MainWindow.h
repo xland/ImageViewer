@@ -19,6 +19,7 @@ public:
 private:
 	friend LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	bool creatreNativeWindow();
+	void setTracking(bool track);
 	LRESULT CALLBACK  winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	void paint();
 	sk_sp<SkSurface> getSurface();

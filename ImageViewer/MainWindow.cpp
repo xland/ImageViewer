@@ -48,6 +48,15 @@ MainWindow::~MainWindow()
 {
 	disposeSurfaceResource();
 }
+void MainWindow::setTracking(bool track)
+{
+	TRACKMOUSEEVENT mouseEvent;
+	mouseEvent.cbSize = sizeof(TRACKMOUSEEVENT);
+	mouseEvent.dwFlags = track ? TME_LEAVE : TME_CANCEL;
+	mouseEvent.hwndTrack = hwnd;
+	mouseEvent.dwHoverTime = HOVER_DEFAULT;
+	TrackMouseEvent(&mouseEvent);
+}
 bool MainWindow::creatreNativeWindow()
 {
 	static std::wstring windowClassName = L"RRS_Window_Class";
@@ -125,10 +134,16 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			clientHeight = HIWORD(lParam);
 			return 0;
 		}
+		case WM_MOUSELEAVE: {
+			setTracking(false);
+			bottomBar->CheckMouseEnter(-1, -1);
+			return 0;
+		}
 		case WM_MOUSEMOVE: 
 		{
 			auto x = GET_X_LPARAM(lParam);
 			auto y = GET_Y_LPARAM(lParam);
+			setTracking(true);
 			bottomBar->CheckMouseEnter(x, y);
 			return 0;
 		}
