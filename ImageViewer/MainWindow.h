@@ -3,6 +3,7 @@
 #include "include/core/SkSurface.h"
 #include "ImageViewer.h"
 #include "BottomBar.h"
+#include "NavigateBar.h"
 struct GrGLInterface;
 class GrDirectContext;
 class MainWindow
@@ -35,5 +36,6 @@ private:
 	unsigned minHeight{ 600 };
 	std::shared_ptr<ImageViewer> imageViewer;
 	std::unique_ptr<BottomBar> bottomBar;
+	std::unique_ptr<NavigateBar> navigateBar;
 };
 

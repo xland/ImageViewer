@@ -42,6 +42,7 @@ MainWindow::MainWindow(HINSTANCE hinstance):hinstance{hinstance}
 	auto path = ConvertWideToUtf8(L"C:\\Users\\liuxiaolun\\Desktop\\图片\\person.gif");//D:\\gif\\gif2.gif D:\\gif\\c.jpg
 	imageViewer = ImageViewer::MakeImageViewer(path.c_str(),this);
 	bottomBar = std::make_unique<BottomBar>(this);
+	navigateBar = std::make_unique<NavigateBar>(this);
 	ShowWindow(hwnd, SW_SHOW);
 }
 MainWindow::~MainWindow()
@@ -137,6 +138,7 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		case WM_MOUSELEAVE: {
 			setTracking(false);
 			bottomBar->CheckMouseEnter(-1, -1);
+			navigateBar->CheckMouseEnter(-1, -1);
 			return 0;
 		}
 		case WM_MOUSEMOVE: 
@@ -145,6 +147,7 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			auto y = GET_Y_LPARAM(lParam);
 			setTracking(true);
 			bottomBar->CheckMouseEnter(x, y);
+			navigateBar->CheckMouseEnter(x, y);			
 			return 0;
 		}
 	}
@@ -156,39 +159,11 @@ void MainWindow::paint()
 	auto canvas = surface->getCanvas();
 	canvas->clear(GetColor(248,248,248));
 	imageViewer->Paint(canvas);
+	navigateBar->Paint(canvas);
 	bottomBar->Paint(canvas);
 	surface->flushAndSubmit();
 	HDC dc = GetDC(hwnd);
 	SwapBuffers(dc);
 	ReleaseDC(hwnd, dc);
 	sizeChanged = false;
-
-	//var canvas = new SKCanvas(signatureBitmap);
-	//var origin = new SKPoint();
-	//var paint = new SKPaint
-	//{
-	//	TextSize = 10,
-	//	IsAntialias = true,
-	//	Color = SKColors.Black,
-	//	IsStroke = false
-	//};
-	//origin.X = 10;
-	//origin.Y = 30;
-	//paint.TextAlign = SKTextAlign.Left;
-	//canvas.DrawText("text", origin, paint);
-	//canvas.Flush();
-	//var resultImage = SKImage.FromBitmap(signatureBitmap);
-
-
-
-	//void draw(SkCanvas * canvas) {
-	//	canvas->clear(SK_ColorWHITE);
-	//	SkMatrix matrix;
-	//	matrix.setScale(0.75f, 0.75f);
-	//	matrix.preRotate(30.0f);
-	//	SkPaint paint;
-	//	paint.setShader(image->makeShader(SkTileMode::kRepeat, SkTileMode::kRepeat,
-	//		SkSamplingOptions(), matrix));
-	//	canvas->drawPaint(paint);
-	//}
 }
