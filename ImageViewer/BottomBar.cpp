@@ -27,22 +27,26 @@ void BottomBar::CheckMouseEnter(int mouseX, int mouseY)
 		InvalidateRect(win->hwnd, nullptr, false);
 	}
 }
+void BottomBar::caculatePosition()
+{
+	if (!win->sizeChanged) return;
+	x = (float)(win->clientWidth - w) / 2 ;
+	y = (float)(win->clientHeight - win->bottomBarHeight);
+}
 void BottomBar::Paint(SkCanvas* canvas)
 {
 	SkPaint paint;
-	paint.setColor(ColorWhite);
-	x = (float)(win->clientWidth - w) / 2;
-	y = (float)(win->clientHeight - win->bottomBarHeight);
 	{
+		paint.setColor(ColorWhite);
 		SkRect rect;
-		rect.setXYWH(0, y, (float)win->clientWidth, (float)win->bottomBarHeight);
+		rect.setXYWH(0, win->clientHeight - win->bottomBarHeight, (float)win->clientWidth, (float)win->bottomBarHeight);
 		canvas->drawRect(rect, paint);
-	}
-
-	auto tempY = y+fontSize/2+ win->bottomBarHeight /2;
+	}	
+	caculatePosition();
+	float tempX = x + fontSize;
+	float tempY = y + fontSize / 2 + win->bottomBarHeight / 2;
 	paint.setColor(ColorBlack);
 	paint.setAntiAlias(true);
-	float tempX = x + fontSize;
 	auto font = IconFont::Get();
 	font->setSize(fontSize);
 	for (size_t i = 0; i < btnCodes.size(); i++)

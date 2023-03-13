@@ -10,6 +10,7 @@ public:
 	void CheckMouseEnter(int mouseX, int mouseY);
 	MainWindow* win{ nullptr };
 private:
+	void caculatePosition();
 	unsigned fontSize{ 22 };
 	float btnWidth{ 68.f };
 	float x{ 0.f };

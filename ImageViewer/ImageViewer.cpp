@@ -1,17 +1,37 @@
 #include "ImageViewer.h"
 #include "GifViewer.h"
 #include "MainWindow.h"
+#include "include/core/SkFont.h"
+#include "include/core/SkColorFilter.h"
+#include "include/core/SkMaskFilter.h"
+#include "Color.h"
 ImageViewer::ImageViewer()
 {
-
+	SkBitmap bitmap;
+	
+	auto info = SkImageInfo::Make(300, 300, kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
+	bitmap.allocPixels(info);
+	//bitmap.allocN32Pixels(50, 50);
+	SkCanvas canvas(bitmap);
+	SkFont font(SkTypeface::MakeFromName("Microsoft YaHei", SkFontStyle::Normal()), 16);
+	SkPaint paint;
+	paint.setColor(GetColor(187,187,187,50));
+	paint.setAntiAlias(true);
+	std::wstring Text = L"刘晓伦";
+	canvas.drawSimpleText(Text.data(), wcslen(Text.data()) * 2, SkTextEncoding::kUTF16, 90, 60, font, paint);
+	bitmap.setImmutable();
+	sk_sp<SkImage> mask = bitmap.asImage();
+	SkMatrix matrix;
+	matrix.preRotate(-45.f);
+	shader = mask->makeShader(SkTileMode::kRepeat, SkTileMode::kRepeat, ImageOption, matrix);
 }
 ImageViewer::~ImageViewer()
 {
 
 }
-SkRect ImageViewer::CaculatePosition(sk_sp<SkImage> image)
-{
-	SkRect result;
+void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
+{ 
+	if (!win->sizeChanged) return;
 	auto imageWidth = (float)image->width();
 	auto imageHeight = (float)image->height();
 	auto clientWidth = (float)win->clientWidth;
@@ -57,14 +77,15 @@ SkRect ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 		w = imageWidth;
 		h = imageHeight;
 	}
-	result.setXYWH(x, y, w, h);
-	return result;
+	ImageRect.setXYWH(x, y, w, h);
 }
 void ImageViewer::Paint(SkCanvas* canvas)
 {
-	auto rect = CaculatePosition(image);
-	SkSamplingOptions option(SkFilterMode::kNearest, SkMipmapMode::kLinear);
-	canvas->drawImageRect(image, rect,option);
+	CaculatePosition(image); //todo 有些时候没必要做这个计算
+	canvas->drawImageRect(image, ImageRect, ImageOption);
+	SkPaint paint;	
+	paint.setShader(shader);
+	canvas->drawPaint(paint);
 }
 
 std::shared_ptr<ImageViewer> ImageViewer::MakeImageViewer(const char* path,MainWindow* win)

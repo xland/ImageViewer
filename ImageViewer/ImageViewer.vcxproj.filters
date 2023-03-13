@@ -71,6 +71,9 @@
     <ClInclude Include="IconFont.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ElementEnum.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Font Include="button.ttf" />

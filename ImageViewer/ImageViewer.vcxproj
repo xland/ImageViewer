@@ -157,6 +157,7 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="DisplayParams.h" />
+    <ClInclude Include="ElementEnum.h" />
     <ClInclude Include="GifViewer.h" />
     <ClInclude Include="IconFont.h" />
     <ClInclude Include="ImageViewer.h" />

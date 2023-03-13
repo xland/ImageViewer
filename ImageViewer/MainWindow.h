@@ -14,6 +14,7 @@ public:
 	unsigned clientWidth{ 0 };
 	unsigned clientHeight{ 0 };
 	unsigned bottomBarHeight{ 60 };
+	bool sizeChanged{ true };
 	HINSTANCE hinstance;
 private:
 	friend LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

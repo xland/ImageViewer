@@ -39,7 +39,7 @@ MainWindow::MainWindow(HINSTANCE hinstance):hinstance{hinstance}
 	}	
 	IconFont::Init();
 	initSurface();
-	auto path = ConvertWideToUtf8(L"C:\\Users\\liuxiaolun\\Desktop\\图片\\girl.jpg");//D:\\gif\\gif2.gif D:\\gif\\c.jpg
+	auto path = ConvertWideToUtf8(L"C:\\Users\\liuxiaolun\\Desktop\\图片\\person.gif");//D:\\gif\\gif2.gif D:\\gif\\c.jpg
 	imageViewer = ImageViewer::MakeImageViewer(path.c_str(),this);
 	bottomBar = std::make_unique<BottomBar>(this);
 	ShowWindow(hwnd, SW_SHOW);
@@ -93,16 +93,21 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		case WM_CLOSE:
 		{
 			PostQuitMessage(0);
+			return 0;
 		}
 		case WM_PAINT:
 		{
 			BeginPaint(hwnd, &ps);
 			paint();
 			EndPaint(hwnd, &ps);
+			return 0;
+		}
+		case WM_ERASEBKGND: {
+			return 0; // InvalidateRect(win->hwnd, nullptr, false);
 		}
 		case WM_NCCALCSIZE: 
 		{
-			return DefWindowProc(hwnd, msg, wParam, lParam);
+			return DefWindowProc(hwnd, msg, wParam, lParam);			
 		}
 		case WM_GETMINMAXINFO: 
 		{
@@ -115,6 +120,7 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			return 0;
 		}
 		case WM_SIZE: {
+			sizeChanged = true;
 			clientWidth = LOWORD(lParam);
 			clientHeight = HIWORD(lParam);
 			return 0;
@@ -140,7 +146,7 @@ void MainWindow::paint()
 	HDC dc = GetDC(hwnd);
 	SwapBuffers(dc);
 	ReleaseDC(hwnd, dc);
-
+	sizeChanged = false;
 
 	//var canvas = new SKCanvas(signatureBitmap);
 	//var origin = new SKPoint();
