@@ -15,7 +15,7 @@ public:
 	unsigned clientWidth{ 0 };
 	unsigned clientHeight{ 0 };
 	unsigned bottomBarHeight{ 60 };
-	bool sizeChanged{ true };
+	std::shared_ptr<ImageViewer> imageViewer;
 	HINSTANCE hinstance;
 private:
 	friend LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -34,7 +34,6 @@ private:
 	unsigned height{ 700 };
 	unsigned minWidth{ 800 };
 	unsigned minHeight{ 600 };
-	std::shared_ptr<ImageViewer> imageViewer;
 	std::unique_ptr<BottomBar> bottomBar;
 	std::unique_ptr<NavigateBar> navigateBar;
 };

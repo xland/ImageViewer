@@ -39,8 +39,8 @@ MainWindow::MainWindow(HINSTANCE hinstance):hinstance{hinstance}
 	}	
 	IconFont::Init();
 	initSurface();
-	auto path = ConvertWideToUtf8(L"C:\\Users\\liuxiaolun\\Desktop\\图片\\person.gif");//D:\\gif\\gif2.gif D:\\gif\\c.jpg
-	imageViewer = ImageViewer::MakeImageViewer(path.c_str(),this);
+	//auto path = ConvertWideToUtf8(L"C:\\Users\\liuxiaolun\\Desktop\\图片\\girl.jpg");//D:\\gif\\gif2.gif D:\\gif\\c.jpg
+	//imageViewer = ImageViewer::MakeImageViewer(path.c_str(),this);
 	bottomBar = std::make_unique<BottomBar>(this);
 	navigateBar = std::make_unique<NavigateBar>(this);
 	ShowWindow(hwnd, SW_SHOW);
@@ -130,7 +130,6 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			return 0;
 		}
 		case WM_SIZE: {
-			sizeChanged = true;
 			clientWidth = LOWORD(lParam);
 			clientHeight = HIWORD(lParam);
 			return 0;
@@ -150,6 +149,14 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			navigateBar->CheckMouseEnter(x, y);			
 			return 0;
 		}
+		case WM_LBUTTONUP:
+		{
+			auto x = GET_X_LPARAM(lParam);
+			auto y = GET_Y_LPARAM(lParam);
+			bottomBar->CheckMouseUp(x, y);
+			navigateBar->CheckMouseUp(x, y);
+			return 0;
+		}
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
@@ -158,12 +165,13 @@ void MainWindow::paint()
 	auto surface = getSurface();
 	auto canvas = surface->getCanvas();
 	canvas->clear(GetColor(248,248,248));
-	imageViewer->Paint(canvas);
+	if (imageViewer) {
+		imageViewer->Paint(canvas);
+	}	
 	navigateBar->Paint(canvas);
 	bottomBar->Paint(canvas);
 	surface->flushAndSubmit();
 	HDC dc = GetDC(hwnd);
 	SwapBuffers(dc);
 	ReleaseDC(hwnd, dc);
-	sizeChanged = false;
 }

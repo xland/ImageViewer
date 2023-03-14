@@ -9,7 +9,12 @@ GifViewer::GifViewer()
 GifViewer::~GifViewer()
 {
     running = false;
-    animateThreadResult.wait();
+    if (decodeThread.joinable()) {
+        decodeThread.join();
+    }
+    if (animateThreadResult.valid()) {
+        animateThreadResult.wait();
+    }    
 }
 
 void GifViewer::Paint(SkCanvas* canvas)
@@ -21,33 +26,37 @@ void GifViewer::Paint(SkCanvas* canvas)
     paint.setShader(shader);
     canvas->drawPaint(paint);
 }
-void GifViewer::DecodeGif(std::unique_ptr<SkCodec> _codec)
+void GifViewer::DecodeGif(std::unique_ptr<SkCodec> codec)
 {
-    std::thread t(&GifViewer::decodeGifFrame, this,std::move(_codec));
-    t.detach();  
+    decodeThread = std::thread([this](std::unique_ptr<SkCodec> codec){
+        auto imageInfo = codec->getInfo();
+        frameCount = codec->getFrameCount();
+        auto option = std::make_unique<SkCodec::Options>();
+        auto frameInfo = codec->getFrameInfo();
+        auto bitmap = std::make_unique<SkBitmap>();
+        bitmap->setInfo(imageInfo);
+        bitmap->allocPixels();
+        auto totalTime = 0;
+        for (unsigned frame = 0; frame < frameCount; frame++)
+        {
+            option->fFrameIndex = frame;
+            auto duration = frameInfo[frame].fDuration;
+            durations.push_back(duration);
+            auto dataPointer = bitmap->getPixels();
+            codec->getPixels(imageInfo, dataPointer, imageInfo.minRowBytes(), option.get());
+            frameImages.push_back(bitmap->asImage());
+            if (!running) {
+                break;
+            }
+            if (frame == 0) {
+                InvalidateRect(win->hwnd, nullptr, false);
+                animateThreadResult = std::async(&GifViewer::animateThread, this);
+            }
+        }
+    },std::move(codec));
 }
 void GifViewer::decodeGifFrame(std::unique_ptr<SkCodec> codec) {
-    auto imageInfo = codec->getInfo();
-    frameCount = codec->getFrameCount();
-    auto option = std::make_unique<SkCodec::Options>();
-    auto frameInfo = codec->getFrameInfo();
-    auto bitmap = std::make_unique<SkBitmap>();
-    bitmap->setInfo(imageInfo);
-    bitmap->allocPixels();
-    auto totalTime = 0;
-    for (unsigned frame = 0; frame < frameCount; frame++)
-    {
-        option->fFrameIndex = frame;
-        auto duration = frameInfo[frame].fDuration;
-        durations.push_back(duration);
-        auto dataPointer = bitmap->getPixels();
-        codec->getPixels(imageInfo, dataPointer, imageInfo.minRowBytes(), option.get());
-        frameImages.push_back(bitmap->asImage());    
-        if (frame == 0) {
-            InvalidateRect(win->hwnd, nullptr, false);
-            animateThreadResult = std::async(&GifViewer::animateThread, this);
-        }
-    }    
+        
 }
 void GifViewer::animateThread()
 {

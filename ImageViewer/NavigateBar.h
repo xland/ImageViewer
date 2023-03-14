@@ -8,6 +8,7 @@ public:
 	~NavigateBar();
 	void Paint(SkCanvas* canvas);
 	void CheckMouseEnter(int mouseX, int mouseY);
+	void CheckMouseUp(int mouseX, int mouseY);
 	MainWindow* win{ nullptr };
 private:
 	float r = 35.f;

@@ -7,8 +7,7 @@
 #include "Color.h"
 ImageViewer::ImageViewer()
 {
-	SkBitmap bitmap;
-	
+	SkBitmap bitmap;	
 	auto info = SkImageInfo::Make(300, 300, kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
 	bitmap.allocPixels(info);
 	//bitmap.allocN32Pixels(50, 50);
@@ -31,7 +30,6 @@ ImageViewer::~ImageViewer()
 }
 void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 { 
-	if (!win->sizeChanged) return;
 	auto imageWidth = (float)image->width();
 	auto imageHeight = (float)image->height();
 	auto clientWidth = (float)win->clientWidth;
@@ -108,6 +106,6 @@ std::shared_ptr<ImageViewer> ImageViewer::MakeImageViewer(const char* path,MainW
 		result = std::make_shared<ImageViewer>();
 		result->image = SkImage::MakeFromEncoded(skData);
 	}
-	result->win = win;
+	result->win = win;	
 	return result;
 }

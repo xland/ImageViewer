@@ -21,5 +21,6 @@ private:
 	std::vector<sk_sp<SkImage>> frameImages;
 	bool running{ true };
 	std::shared_future<void> animateThreadResult;
+	std::thread decodeThread;
 };
 

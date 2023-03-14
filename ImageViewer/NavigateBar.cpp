@@ -10,29 +10,46 @@ NavigateBar::~NavigateBar()
 {
 
 }
+void NavigateBar::CheckMouseUp(int x, int y)
+{
+
+}
 void NavigateBar::CheckMouseEnter(int x, int y)
 {
 	if (x > 0 && x < w && y>0 && y < win->clientHeight - win->bottomBarHeight) 
 	{
-		mouseEnterLeft = true;
+		if (!mouseEnterLeft) 
+		{
+			mouseEnterLeft = true;
+			InvalidateRect(win->hwnd, nullptr, false);
+		}
 	}
 	else
 	{
-		mouseEnterLeft = false;
+		if (mouseEnterLeft) 
+		{
+			mouseEnterLeft = false;
+			InvalidateRect(win->hwnd, nullptr, false);
+		}		
 	}
 	if (x > win->clientWidth-w && x < win->clientWidth && y>0 && y < win->clientHeight - win->bottomBarHeight) 
 	{
-		mouseEnterRight = true;
+		if (!mouseEnterRight) {
+			mouseEnterRight = true;
+			InvalidateRect(win->hwnd, nullptr, false);
+		}		
 	}
 	else
 	{
-		mouseEnterRight = false;
+		if (mouseEnterRight) {
+			mouseEnterRight = false;
+			InvalidateRect(win->hwnd, nullptr, false);
+		}		
 	}
 }
 void NavigateBar::Paint(SkCanvas* canvas)
 {	
 	if (!mouseEnterLeft && !mouseEnterRight) return;
-
 	auto font = IconFont::Get();
 	font->setSize(26);
 	y = ((float)win->clientHeight - (float)win->bottomBarHeight) / 2;
