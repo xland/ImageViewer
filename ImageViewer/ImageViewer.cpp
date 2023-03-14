@@ -28,6 +28,20 @@ ImageViewer::~ImageViewer()
 {
 
 }
+void ImageViewer::Zoom(bool isBigger)
+{
+	win->bottomBar->btnCodes[5] = (const char*)u8"\ue6f8";
+	float scalNum = isBigger? 1.01:0.99;
+	float w = ImageRect.width() * scalNum;
+	float h = ImageRect.height() * scalNum;
+	ImageRect.setWH(w, h);
+	float x = ((float)win->clientWidth - w) / 2;
+	float y = ((float)win->clientHeight - h) / 2;
+	ImageRect.setLTRB(x, y, x+w, y+h);
+	IsAutoSize = false;
+	InvalidateRect(win->hwnd, nullptr, false);
+	
+}
 void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 { 
 	auto imageWidth = (float)image->width();
@@ -47,9 +61,9 @@ void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 		}
 		else
 		{
-			h = imageHeight/widthRatio;
+			h = imageHeight / widthRatio;
 			w = clientWidth;
-			y = (clientHeight - h)/2;
+			y = (clientHeight - h) / 2;
 			x = 0;
 		}
 	}
@@ -79,7 +93,7 @@ void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 }
 void ImageViewer::Paint(SkCanvas* canvas)
 {
-	CaculatePosition(image); //todo 有些时候没必要做这个计算
+	if (IsAutoSize) CaculatePosition(image); //todo 有些时候没必要做这个计算
 	canvas->drawImageRect(image, ImageRect, ImageOption);
 	SkPaint paint;	
 	paint.setShader(shader);

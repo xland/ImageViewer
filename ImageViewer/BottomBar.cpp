@@ -106,6 +106,12 @@ void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 	else if (mouseEnterIndex == 2) {
 		loopFile(true);
 	}
+	else if (mouseEnterIndex == 3) {
+		win->imageViewer->Zoom(false);
+	}
+	else if (mouseEnterIndex == 4) {
+		win->imageViewer->Zoom(true);
+	}
 }
 void BottomBar::CheckMouseEnter(int mouseX, int mouseY)
 {
@@ -151,7 +157,7 @@ void BottomBar::Paint(SkCanvas* canvas)
 			canvas->drawRect(rect, paint);
 			paint.setColor(ColorBlack);
 		}
-		canvas->drawString(btnCodes[i], tempX, tempY, *font, paint);
+		canvas->drawString(btnCodes[i], tempX, tempY, *font, paint);		
 		tempX += btnWidth;
 	}
 }

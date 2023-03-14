@@ -4,6 +4,7 @@
 #include "ImageViewer.h"
 #include "BottomBar.h"
 #include "NavigateBar.h"
+#include <chrono>
 struct GrGLInterface;
 class GrDirectContext;
 class MainWindow
@@ -16,6 +17,7 @@ public:
 	unsigned clientHeight{ 0 };
 	unsigned bottomBarHeight{ 60 };
 	std::shared_ptr<ImageViewer> imageViewer;
+	std::unique_ptr<BottomBar> bottomBar;
 	HINSTANCE hinstance;
 private:
 	friend LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -34,7 +36,7 @@ private:
 	unsigned height{ 700 };
 	unsigned minWidth{ 800 };
 	unsigned minHeight{ 600 };
-	std::unique_ptr<BottomBar> bottomBar;
 	std::unique_ptr<NavigateBar> navigateBar;
+	std::chrono::system_clock::time_point leftBtnDownTime;
 };
 

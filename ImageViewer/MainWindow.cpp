@@ -13,6 +13,7 @@
 #include "Converter.h"
 #include "IconFont.h"
 
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	MainWindow* win;
@@ -148,6 +149,10 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			bottomBar->CheckMouseEnter(x, y);
 			navigateBar->CheckMouseEnter(x, y);			
 			return 0;
+		}
+		case WM_LBUTTONDOWN:
+		{
+			leftBtnDownTime = std::chrono::system_clock::now();
 		}
 		case WM_LBUTTONUP:
 		{
