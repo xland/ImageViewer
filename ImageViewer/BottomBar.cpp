@@ -138,6 +138,7 @@ void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 		
 	}
 	else if (mouseEnterIndex == 6) {
+		btnCodes[5] = (const char*)u8"\ue6be";
 		win->imageViewer->Rotate();
 	}
 	else if (mouseEnterIndex == 7) {

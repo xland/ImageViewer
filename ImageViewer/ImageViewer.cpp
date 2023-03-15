@@ -52,6 +52,7 @@ void ImageViewer::Zoom(float scalNum)
 }
 void ImageViewer::Rotate()
 {
+	IsAutoSize = true;
 	SkBitmap bitmap;
 	bitmap.allocN32Pixels(image->height(), image->width());
 	SkCanvas canvas(bitmap);
