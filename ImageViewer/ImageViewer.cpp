@@ -5,6 +5,7 @@
 #include "include/core/SkColorFilter.h"
 #include "include/core/SkMaskFilter.h"
 #include "Color.h"
+#include <math.h>
 ImageViewer::ImageViewer()
 {
 	initMaskShader();
@@ -45,6 +46,18 @@ void ImageViewer::Zoom(float scalNum)
 	ImageRect.setXYWH(x, y, w, h);
 	IsAutoSize = false;
 	InvalidateRect(win->hwnd, nullptr, false);	
+}
+void ImageViewer::Rotate()
+{
+	SkBitmap bitmap;
+	bitmap.allocN32Pixels(image->height(), image->width());
+	SkCanvas canvas(bitmap);
+	canvas.translate(0, bitmap.height());
+	canvas.rotate(-90);
+	canvas.drawImage(image, 0, 0);
+	bitmap.setImmutable();
+	image = bitmap.asImage();
+	InvalidateRect(win->hwnd, nullptr, false);
 }
 void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 { 	

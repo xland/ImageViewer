@@ -54,8 +54,6 @@ void BottomBar::loopFile(bool isNext)
 	btnCodes[5] = (const char*)u8"\ue6be";
 	InvalidateRect(win->hwnd, nullptr, false);
 }
-
-
 void BottomBar::openFile()
 {
 	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -123,6 +121,9 @@ void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 			win->imageViewer->Zoom(1.f);
 		}
 		
+	}
+	else if (mouseEnterIndex == 6) {
+		win->imageViewer->Rotate();
 	}
 }
 void BottomBar::CheckMouseEnter(int mouseX, int mouseY)
