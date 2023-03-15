@@ -49,6 +49,7 @@ void NavigateBar::CheckMouseEnter(int x, int y)
 }
 void NavigateBar::Paint(SkCanvas* canvas)
 {	
+	//todo paint border
 	if (!mouseEnterLeft && !mouseEnterRight) return;
 	auto font = IconFont::Get();
 	font->setSize(26);

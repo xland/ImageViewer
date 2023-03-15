@@ -152,15 +152,25 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		}
 		case WM_LBUTTONDOWN:
 		{
-			leftBtnDownTime = std::chrono::system_clock::now();
-		}
-		case WM_LBUTTONUP:
-		{
+			//leftBtnDownTime = std::chrono::system_clock::now();
 			auto x = GET_X_LPARAM(lParam);
 			auto y = GET_Y_LPARAM(lParam);
+			//OutputDebugStringA("CheckMouseUp");
+			//OutputDebugStringA("\r\n");
 			bottomBar->CheckMouseUp(x, y);
 			navigateBar->CheckMouseUp(x, y);
 			return 0;
+		}
+		case WM_LBUTTONUP:
+		{
+			//GetDoubleClickTime();
+			//auto x = GET_X_LPARAM(lParam);
+			//auto y = GET_Y_LPARAM(lParam);
+			//OutputDebugStringA("CheckMouseUp");
+			//OutputDebugStringA("\r\n");
+			//bottomBar->CheckMouseUp(x, y);
+			//navigateBar->CheckMouseUp(x, y);
+			//return DefWindowProc(hwnd, msg, wParam, lParam);
 		}
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);

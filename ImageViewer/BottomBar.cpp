@@ -11,7 +11,7 @@
 
 BottomBar::BottomBar(MainWindow* win):win{win}
 {
-	
+	//todo cursor style
 }
 BottomBar::~BottomBar()
 {
@@ -50,10 +50,8 @@ void BottomBar::loopFile(bool isNext)
 	}
 	imagePath = resultPath;
 	auto path = ConvertWideToUtf8(resultPath.wstring());
-	if (path.ends_with(".gif")) {
-		int i = 0;
-	}
 	win->imageViewer = ImageViewer::MakeImageViewer(path.c_str(), win);
+	btnCodes[5] = (const char*)u8"\ue6be";
 	InvalidateRect(win->hwnd, nullptr, false);
 }
 
@@ -96,6 +94,7 @@ void BottomBar::openFile()
 }
 void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 {
+
 	if (mouseEnterIndex == -1) return;
 	if (mouseEnterIndex == 0) {
 		openFile();
@@ -107,10 +106,23 @@ void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 		loopFile(true);
 	}
 	else if (mouseEnterIndex == 3) {
-		win->imageViewer->Zoom(false);
+		win->imageViewer->Zoom(0.98);
 	}
 	else if (mouseEnterIndex == 4) {
-		win->imageViewer->Zoom(true);
+		win->imageViewer->Zoom(1.02);
+	}
+	else if (mouseEnterIndex == 5) {
+		if (btnCodes[5] == (const char*)u8"\ue6f8") 
+		{
+			win->imageViewer->IsAutoSize = true;
+			btnCodes[5] = (const char*)u8"\ue6be";
+			InvalidateRect(win->hwnd, nullptr, false);
+		}
+		else
+		{
+			win->imageViewer->Zoom(1.f);
+		}
+		
 	}
 }
 void BottomBar::CheckMouseEnter(int mouseX, int mouseY)
