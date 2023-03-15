@@ -2,6 +2,7 @@
 #include "MainWindow.h"
 #include "Color.h"
 #include "include/core/SkFont.h"
+#include "include/core/SkMaskFilter.h"
 #include "resource.h"
 #include <math.h>
 #include "IconFont.h"
@@ -15,7 +16,9 @@ BottomBar::BottomBar(MainWindow* win):win{win}
 }
 BottomBar::~BottomBar()
 {
-
+	if (lastFirstWaitingTread && lastFirstWaitingTread->joinable()) {
+		lastFirstWaitingTread->join();
+	}
 }
 
 void BottomBar::loopFile(bool isNext)
@@ -41,17 +44,57 @@ void BottomBar::loopFile(bool isNext)
 			else
 			{
 				nextBreakFlag = true;
-			}			
+			}
 		}
 		resultPath = temp;
 	}
 	if (resultPath.empty()) {
+		if (!isNext) {
+			lastFirstWaitingTime = 2000;
+			if (lastFirstFlag == 0) {
+				if (lastFirstWaitingTread && lastFirstWaitingTread->joinable()) {
+					lastFirstWaitingTread->join();
+				}
+				lastFirstWaitingTread = std::make_shared<std::thread>(&BottomBar::lastFirstWaitingFunc, this);
+			}
+
+			if (lastFirstFlag != 1) {
+				lastFirstFlag = 1;
+				InvalidateRect(win->hwnd, nullptr, false);
+			}
+		}
+		return;
+	}
+	if (imagePath == resultPath) {
+		if (isNext) {
+			lastFirstWaitingTime = 2000;
+			if (lastFirstFlag == 0) {				
+				if (lastFirstWaitingTread && lastFirstWaitingTread->joinable()) {
+					lastFirstWaitingTread->join();
+				}
+				lastFirstWaitingTread = std::make_shared<std::thread>(&BottomBar::lastFirstWaitingFunc, this);				
+			}
+			if (lastFirstFlag != 2) {
+				lastFirstFlag = 2;
+				InvalidateRect(win->hwnd, nullptr, false);
+			}
+		}
 		return;
 	}
 	imagePath = resultPath;
 	auto path = ConvertWideToUtf8(resultPath.wstring());
 	win->imageViewer = ImageViewer::MakeImageViewer(path.c_str(), win);
 	btnCodes[5] = (const char*)u8"\ue6be";
+	InvalidateRect(win->hwnd, nullptr, false);
+}
+void BottomBar::lastFirstWaitingFunc()
+{
+	while (lastFirstWaitingTime > 0)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+		lastFirstWaitingTime -= 20;
+	}
+	lastFirstFlag = 0;
 	InvalidateRect(win->hwnd, nullptr, false);
 }
 std::string BottomBar::openFileDialog(bool isSave) {
@@ -106,12 +149,14 @@ void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 {
 
 	if (mouseEnterIndex == -1) return;
-	if (mouseEnterIndex == 0) {
+	else if (mouseEnterIndex == 0) {
 		auto path = openFileDialog(false);
 		if (path.empty()) return;
 		win->imageViewer = ImageViewer::MakeImageViewer(path.c_str(), win);
 		InvalidateRect(win->hwnd, nullptr, false);
+		return;
 	}
+	if (imagePath.empty())return;
 	else if (mouseEnterIndex == 1) {
 		loopFile(false);
 	}
@@ -150,6 +195,8 @@ void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 void BottomBar::CheckMouseEnter(int mouseX, int mouseY)
 {
 	int index = -2;
+	auto x = (float)(win->clientWidth - w) / 2;
+	auto y = (float)(win->clientHeight - win->bottomBarHeight);
 	if (mouseX > x && mouseY > y && mouseX < x + w && mouseY < win->clientHeight) {
 		index = (unsigned)std::floor((mouseX - x) / btnWidth);
 	}
@@ -161,11 +208,6 @@ void BottomBar::CheckMouseEnter(int mouseX, int mouseY)
 		InvalidateRect(win->hwnd, nullptr, false);
 	}
 }
-void BottomBar::caculatePosition()
-{
-	x = (float)(win->clientWidth - w) / 2 ;
-	y = (float)(win->clientHeight - win->bottomBarHeight);
-}
 void BottomBar::Paint(SkCanvas* canvas)
 {
 	SkPaint paint;
@@ -175,7 +217,8 @@ void BottomBar::Paint(SkCanvas* canvas)
 		rect.setXYWH(0, win->clientHeight - win->bottomBarHeight, (float)win->clientWidth, (float)win->bottomBarHeight);
 		canvas->drawRect(rect, paint);
 	}	
-	caculatePosition();
+	auto x = (float)(win->clientWidth - w) / 2;
+	auto y = (float)(win->clientHeight - win->bottomBarHeight);
 	float tempX = x + fontSize;
 	float tempY = y + fontSize / 2 + win->bottomBarHeight / 2;
 	paint.setColor(ColorBlack);
@@ -193,5 +236,29 @@ void BottomBar::Paint(SkCanvas* canvas)
 		}
 		canvas->drawString(btnCodes[i], tempX, tempY, *font, paint);		
 		tempX += btnWidth;
+	}
+	if (lastFirstFlag>0) {
+		auto x = (float)(win->clientWidth - 300) / 2;
+		auto y = (float)(win->clientHeight - win->bottomBarHeight - 60)/2;
+		SkRect rect;
+		rect.setXYWH(x, y, 300, 60);
+		paint.setColor(ColorBlack);
+		{
+			SkPaint blur;
+			blur.setColor(ColorWhite);
+			blur.setAlpha(127);
+			blur.setMaskFilter(SkMaskFilter::MakeBlur(kNormal_SkBlurStyle, 3.4f, false));
+			canvas->drawRoundRect(rect, 6, 6, blur);
+		}
+		canvas->drawRoundRect(rect, 6,6,paint);
+		paint.setColor(ColorWhite);
+		SkFont font(SkTypeface::MakeFromName("Microsoft YaHei", SkFontStyle::Normal()), 20);
+		paint.setAntiAlias(true);
+		std::wstring Text = lastFirstFlag == 1 ? L"已是第一张":L"已是最后一张";
+		SkRect rectText;
+		font.measureText(Text.data(), wcslen(Text.data()) * 2, SkTextEncoding::kUTF16, &rectText);
+		x = x+(300-rectText.width())/2+ rectText.x();
+		y = y+(60 - rectText.height()) / 2 - rectText.y();
+		canvas->drawSimpleText(Text.data(), wcslen(Text.data()) * 2, SkTextEncoding::kUTF16, x, y, font, paint);
 	}
 }
