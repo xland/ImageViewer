@@ -54,20 +54,32 @@ void BottomBar::loopFile(bool isNext)
 	btnCodes[5] = (const char*)u8"\ue6be";
 	InvalidateRect(win->hwnd, nullptr, false);
 }
-void BottomBar::openFile()
-{
+std::string BottomBar::openFileDialog(bool isSave) {
 	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 	if (SUCCEEDED(hr))
 	{
-		IFileOpenDialog* pFileOpen;
-		hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
+		IFileOpenDialog* pFileSave;
+		CLSID param1 = CLSID_FileOpenDialog, param2 = IID_IFileOpenDialog; 
+		if (isSave) {
+			param1 = CLSID_FileSaveDialog;
+			param2 = IID_IFileSaveDialog;
+		}
+		hr = CoCreateInstance(param1, NULL, CLSCTX_ALL, param2, reinterpret_cast<void**>(&pFileSave));
 		if (SUCCEEDED(hr))
 		{
-			hr = pFileOpen->Show(win->hwnd);
+			COMDLG_FILTERSPEC FileTypes[] = {
+{ L"All Pictures", L"*.png;*.bmp;*.gif;*.jpg;*.jpeg;*.svg;*.ico;*.jfif;*.jpe;*.dib;*.rle;*.emz;*.wmz;*.tif;*.tiff;*.emf;*.wmf;" },
+{ L"All files", L"*.*" }
+			};
+			if (isSave) {
+				pFileSave->SetFileName(imagePath.filename().wstring().c_str());
+			}
+			pFileSave->SetFileTypes(2, FileTypes);
+			hr = pFileSave->Show(win->hwnd);
 			if (SUCCEEDED(hr))
 			{
 				IShellItem* pItem;
-				hr = pFileOpen->GetResult(&pItem);
+				hr = pFileSave->GetResult(&pItem);
 				if (SUCCEEDED(hr))
 				{
 					PWSTR pszFilePath;
@@ -79,23 +91,26 @@ void BottomBar::openFile()
 						CoTaskMemFree(pszFilePath);
 						imagePath = std::filesystem::path(ss.str());
 						auto path = ConvertWideToUtf8(ss.str());
-						win->imageViewer = ImageViewer::MakeImageViewer(path.c_str(), win);
-						InvalidateRect(win->hwnd, nullptr, false);
+						return path;
 					}
 					pItem->Release();
 				}
 			}
-			pFileOpen->Release();
+			pFileSave->Release();
 		}
 		CoUninitialize();
 	}
+	return std::string();
 }
 void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 {
 
 	if (mouseEnterIndex == -1) return;
 	if (mouseEnterIndex == 0) {
-		openFile();
+		auto path = openFileDialog(false);
+		if (path.empty()) return;
+		win->imageViewer = ImageViewer::MakeImageViewer(path.c_str(), win);
+		InvalidateRect(win->hwnd, nullptr, false);
 	}
 	else if (mouseEnterIndex == 1) {
 		loopFile(false);
@@ -124,6 +139,11 @@ void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 	}
 	else if (mouseEnterIndex == 6) {
 		win->imageViewer->Rotate();
+	}
+	else if (mouseEnterIndex == 7) {
+		auto path =	openFileDialog(true);
+		if (path.empty()) return;
+		win->imageViewer->SaveImage(path);
 	}
 }
 void BottomBar::CheckMouseEnter(int mouseX, int mouseY)

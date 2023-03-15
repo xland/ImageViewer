@@ -6,6 +6,9 @@
 #include "include/core/SkMaskFilter.h"
 #include "Color.h"
 #include <math.h>
+
+//todo ²»Ö§³Ösvg
+
 ImageViewer::ImageViewer()
 {
 	initMaskShader();
@@ -127,7 +130,13 @@ void ImageViewer::Paint(SkCanvas* canvas)
 	paint.setShader(shader);
 	canvas->drawPaint(paint);
 }
-
+void ImageViewer::SaveImage(std::string& path)
+{
+	auto data = image->encodeToData();
+	SkFILEWStream fileStream(path.c_str());
+	fileStream.write(data->data(), data->size());
+	fileStream.flush();
+}
 std::shared_ptr<ImageViewer> ImageViewer::MakeImageViewer(const char* path,MainWindow* win)
 {
 	auto skData = SkData::MakeFromFileName(path);

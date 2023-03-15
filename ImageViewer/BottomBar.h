@@ -23,7 +23,7 @@ public:
 private:
 	std::filesystem::path imagePath{};
 	void loopFile(bool isNext);
-	void openFile();
+	std::string openFileDialog(bool isSave);
 	void caculatePosition();
 	unsigned fontSize{ 22 };
 	float btnWidth{ 68.f };

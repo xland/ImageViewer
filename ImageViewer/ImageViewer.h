@@ -9,6 +9,7 @@ public:
 	ImageViewer();
 	~ImageViewer();
 	void CaculatePosition(sk_sp<SkImage> image);
+	void SaveImage(std::string& path);
 	/// <summary>
 	/// 
 	/// </summary>
