@@ -11,10 +11,11 @@ public:
 	~GifViewer();
 	void Paint(SkCanvas* canvas);
 	void DecodeGif(std::unique_ptr<SkCodec> codec);
-	
+	void Zoom(float scalNum) override;	
+	void Rotate() override;
+	void SaveImage(std::string& path) override;
 private:
 	void animateThread();
-	void decodeGifFrame(std::unique_ptr<SkCodec> _codec);
 	int frameCount{ 0 };
 	unsigned currentFrame{ 0 };
 	std::vector<int> durations;

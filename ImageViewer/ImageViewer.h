@@ -9,17 +9,9 @@ public:
 	ImageViewer();
 	~ImageViewer();
 	void CaculatePosition(sk_sp<SkImage> image);
-	void SaveImage(std::string& path);
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="isBigger">
-	/// 0 1:1
-	/// 1 bigger
-	/// 2 smaller
-	/// </param>
-	void Zoom(float scalNum);
-	void Rotate();
+	virtual void SaveImage(std::string& path);
+	virtual void Zoom(float scalNum);
+	virtual void Rotate();
 	static void MakeImageViewer(std::string& path);
 	virtual void Paint(SkCanvas* canvas);
 	SkSamplingOptions ImageOption{ SkFilterMode::kLinear, SkMipmapMode::kLinear };

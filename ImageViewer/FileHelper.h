@@ -10,11 +10,11 @@ public:
 	void ShowNext();
 	void ShowPrev();
 public:
-	
+	std::filesystem::path currentPath{};
 private:
 	void showFileDialog(bool isOpen);
 	void loopFile(bool isNext);
 private:
-	std::filesystem::path currentPath{};
+	
 };
 

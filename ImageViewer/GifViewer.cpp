@@ -1,7 +1,10 @@
 #include "GifViewer.h"
 #include "include/core/SkBitmap.h"
 #include "MainWindow.h"
+#include "BottomBar.h"
 #include "App.h"
+#include "FileHelper.h"
+#include "Converter.h"
 
 GifViewer::GifViewer()
 {
@@ -17,7 +20,33 @@ GifViewer::~GifViewer()
         animateThreadResult.wait();
     }    
 }
+void GifViewer::Zoom(float scalNum)
+{
+    auto win = App::get()->mainWindow.get();
+    if (scalNum == 1.f) {
+        ImageRect = SkRect::Make(frameImages[0]->imageInfo().bounds());
+    }
+    App::get()->bottomBar->btnCodes[5] = (const char*)u8"\ue6f8";
+    float w = ImageRect.width() * scalNum;
+    float h = ImageRect.height() * scalNum;
+    float x = ((float)win->clientWidth - w) / 2;
+    float y = ((float)win->clientHeight - (float)win->bottomBarHeight - h) / 2;
+    ImageRect.setXYWH(x, y, w, h);
+    IsAutoSize = false;
+    App::get()->mainWindow->Refresh();
+}
+void GifViewer::Rotate()
+{
 
+}
+void GifViewer::SaveImage(std::string& path)
+{
+    auto pathSrc = ConvertWideToUtf8(App::get()->fileHelper->currentPath.wstring());
+    auto data = SkData::MakeFromFileName(pathSrc.c_str());
+    SkFILEWStream fileStream(path.c_str());
+    fileStream.write(data->data(), data->size());
+    fileStream.flush();
+}
 void GifViewer::Paint(SkCanvas* canvas)
 {
     if (frameImages.empty()) return;
@@ -55,9 +84,6 @@ void GifViewer::DecodeGif(std::unique_ptr<SkCodec> codec)
             }
         }
     },std::move(codec));
-}
-void GifViewer::decodeGifFrame(std::unique_ptr<SkCodec> codec) {
-        
 }
 void GifViewer::animateThread()
 {

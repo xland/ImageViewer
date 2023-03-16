@@ -110,13 +110,13 @@ void FileHelper::showFileDialog(bool isSave)
 						std::wstringstream ss;
 						ss << pszFilePath;
 						CoTaskMemFree(pszFilePath);
-						currentPath = std::filesystem::path(ss.str());
 						auto path = ConvertWideToUtf8(ss.str());
 						if (isSave) {
 							App::get()->imageViewer->SaveImage(path);
 						}
 						else
 						{
+							currentPath = std::filesystem::path(ss.str());
 							ImageViewer::MakeImageViewer(path);
 						}						
 					}
