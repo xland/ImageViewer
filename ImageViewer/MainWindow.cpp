@@ -11,7 +11,7 @@
 #include "GifViewer.h"
 #include "Color.h"
 #include "Converter.h"
-#include "IconFont.h"
+#include "App.h"
 
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -31,24 +31,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return win->winProc(hwnd, msg, wParam, lParam);
 }
 
-MainWindow::MainWindow(HINSTANCE hinstance):hinstance{hinstance}
+MainWindow::MainWindow()
 {
 	auto flag = creatreNativeWindow();
 	if (!flag || !hwnd) {
 		//todo error
 		return;
-	}	
-	IconFont::Init();
+	}
 	initSurface();
-	//auto path = ConvertWideToUtf8(L"C:\\Users\\liuxiaolun\\Desktop\\图片\\girl.jpg");//D:\\gif\\gif2.gif D:\\gif\\c.jpg
-	//imageViewer = ImageViewer::MakeImageViewer(path.c_str(),this);
-	bottomBar = std::make_unique<BottomBar>(this);
-	navigateBar = std::make_unique<NavigateBar>(this);
-	ShowWindow(hwnd, SW_SHOW);
+	
 }
 MainWindow::~MainWindow()
 {
 	disposeSurfaceResource();
+}
+void MainWindow::Show()
+{
+	ShowWindow(hwnd, SW_SHOW);
+}
+void MainWindow::Refresh()
+{
+	InvalidateRect(hwnd, nullptr, false);
 }
 void MainWindow::setTracking(bool track)
 {
@@ -64,6 +67,7 @@ bool MainWindow::creatreNativeWindow()
 	static std::wstring windowClassName = L"RRS_Window_Class";
 	static WNDCLASSEX wcex;
 	static bool wcexInit = false;
+	auto hinstance = App::get()->hinstance;
 	if (!wcexInit) {
 		wcex.cbSize = sizeof(WNDCLASSEX);
 		wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -137,8 +141,8 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		}
 		case WM_MOUSELEAVE: {
 			setTracking(false);
-			bottomBar->CheckMouseEnter(-1, -1);
-			navigateBar->CheckMouseEnter(-1, -1);
+			App::get()->bottomBar->CheckMouseEnter(-1, -1);
+			App::get()->navigateBar->CheckMouseEnter(-1, -1);
 			return 0;
 		}
 		case WM_MOUSEMOVE: 
@@ -146,8 +150,8 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			auto x = GET_X_LPARAM(lParam);
 			auto y = GET_Y_LPARAM(lParam);
 			setTracking(true);
-			bottomBar->CheckMouseEnter(x, y);
-			navigateBar->CheckMouseEnter(x, y);			
+			App::get()->bottomBar->CheckMouseEnter(x, y);
+			App::get()->navigateBar->CheckMouseEnter(x, y);
 			return 0;
 		}
 		case WM_LBUTTONDOWN:
@@ -157,8 +161,8 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			auto y = GET_Y_LPARAM(lParam);
 			//OutputDebugStringA("CheckMouseUp");
 			//OutputDebugStringA("\r\n");
-			bottomBar->CheckMouseUp(x, y);
-			navigateBar->CheckMouseUp(x, y);
+			App::get()->bottomBar->CheckMouseUp(x, y);
+			App::get()->navigateBar->CheckMouseUp(x, y);
 			return 0;
 		}
 		case WM_LBUTTONUP:
@@ -180,11 +184,12 @@ void MainWindow::paint()
 	auto surface = getSurface();
 	auto canvas = surface->getCanvas();
 	canvas->clear(GetColor(248,248,248));
-	if (imageViewer) {
-		imageViewer->Paint(canvas);
+	auto app = App::get();
+	if (app->imageViewer) {
+		app->imageViewer->Paint(canvas);
 	}	
-	navigateBar->Paint(canvas);
-	bottomBar->Paint(canvas);
+	app->navigateBar->Paint(canvas);
+	app->bottomBar->Paint(canvas);
 	surface->flushAndSubmit();
 	HDC dc = GetDC(hwnd);
 	SwapBuffers(dc);

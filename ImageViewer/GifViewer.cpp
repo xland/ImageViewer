@@ -1,6 +1,7 @@
 #include "GifViewer.h"
 #include "include/core/SkBitmap.h"
 #include "MainWindow.h"
+#include "App.h"
 
 GifViewer::GifViewer()
 {
@@ -29,6 +30,7 @@ void GifViewer::Paint(SkCanvas* canvas)
 void GifViewer::DecodeGif(std::unique_ptr<SkCodec> codec)
 {
     decodeThread = std::thread([this](std::unique_ptr<SkCodec> codec){
+        auto win = App::get()->mainWindow.get();
         auto imageInfo = codec->getInfo();
         frameCount = codec->getFrameCount();
         auto option = std::make_unique<SkCodec::Options>();
@@ -72,6 +74,6 @@ void GifViewer::animateThread()
             }
             currentFrame = 0;
         }
-        InvalidateRect(win->hwnd, nullptr, false);
+        App::get()->mainWindow->Refresh();
     }
 }

@@ -20,9 +20,8 @@ public:
 	/// </param>
 	void Zoom(float scalNum);
 	void Rotate();
-	static std::shared_ptr<ImageViewer> MakeImageViewer(const char* path, MainWindow* win);
+	static void MakeImageViewer(const char* path);
 	virtual void Paint(SkCanvas* canvas);
-	MainWindow* win{ nullptr };
 	SkSamplingOptions ImageOption{ SkFilterMode::kLinear, SkMipmapMode::kLinear };
 	SkRect ImageRect{ SkRect::MakeEmpty()};
 	sk_sp<SkShader> shader;

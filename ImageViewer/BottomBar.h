@@ -6,13 +6,12 @@ class MainWindow;
 class BottomBar
 {
 public:
-	BottomBar(MainWindow* win);
+	BottomBar();
 	~BottomBar();
 	void Paint(SkCanvas* canvas);
 	void CheckMouseEnter(int mouseX, int mouseY);
 	void CheckMouseUp(int mouseX, int mouseY);
 	void loopFile(bool isNext);
-	MainWindow* win{ nullptr };
 	std::vector<const char*> btnCodes{ (const char*)u8"\ueabe"
 		,(const char*)u8"\ue6bf"
 		,(const char*)u8"\ue6ad"

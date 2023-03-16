@@ -10,15 +10,15 @@ class GrDirectContext;
 class MainWindow
 {
 public:
-	MainWindow(HINSTANCE hinstance);
+	MainWindow();
 	~MainWindow();
+	void Show();
+	void Refresh();
+public:
 	HWND hwnd{ nullptr };
 	unsigned clientWidth{ 0 };
 	unsigned clientHeight{ 0 };
-	unsigned bottomBarHeight{ 60 };
-	std::shared_ptr<ImageViewer> imageViewer;
-	std::unique_ptr<BottomBar> bottomBar;
-	HINSTANCE hinstance;
+	unsigned bottomBarHeight{ 60 };	
 private:
 	friend LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	bool creatreNativeWindow();
@@ -28,6 +28,7 @@ private:
 	sk_sp<SkSurface> getSurface();
 	void disposeSurfaceResource();
 	void initSurface();
+private:
 	int stencilBits{ 0 };
 	HGLRC hglrc{ nullptr };
 	const GrGLInterface* backendContext{ nullptr };
@@ -36,7 +37,6 @@ private:
 	unsigned height{ 700 };
 	unsigned minWidth{ 800 };
 	unsigned minHeight{ 600 };
-	std::unique_ptr<NavigateBar> navigateBar;
 	std::chrono::system_clock::time_point leftBtnDownTime;
 };
 

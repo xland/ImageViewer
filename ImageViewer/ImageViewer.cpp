@@ -6,6 +6,7 @@
 #include "include/core/SkMaskFilter.h"
 #include "Color.h"
 #include <math.h>
+#include "App.h"
 
 //todo ²»Ö§³Ösvg
 
@@ -24,12 +25,12 @@ void ImageViewer::initMaskShader()
 	//bitmap.allocPixels(info);
 	bitmap.allocN32Pixels(300, 300);
 	SkCanvas canvas(bitmap);
-	SkFont font(SkTypeface::MakeFromName("Microsoft YaHei", SkFontStyle::Normal()), 16);
+	SkFont font(SkTypeface::MakeFromName("Microsoft YaHei", SkFontStyle::Normal()), 16.f);
 	SkPaint paint;
 	paint.setColor(GetColor(187, 187, 187, 50));
 	paint.setAntiAlias(true);
 	std::wstring Text = L"ÁõÏþÂ×";
-	canvas.drawSimpleText(Text.data(), wcslen(Text.data()) * 2, SkTextEncoding::kUTF16, 90, 60, font, paint);
+	canvas.drawSimpleText(Text.data(), wcslen(Text.data()) * 2, SkTextEncoding::kUTF16, 90.f, 60.f, font, paint);
 	bitmap.setImmutable();
 	sk_sp<SkImage> mask = bitmap.asImage();
 	SkMatrix matrix;
@@ -38,17 +39,18 @@ void ImageViewer::initMaskShader()
 }
 void ImageViewer::Zoom(float scalNum)
 {
+	auto win = App::get()->mainWindow.get();
 	if (scalNum == 1.f) {
 		ImageRect = SkRect::Make(image->imageInfo().bounds());
 	}
-	win->bottomBar->btnCodes[5] = (const char*)u8"\ue6f8";
+	App::get()->bottomBar->btnCodes[5] = (const char*)u8"\ue6f8";
 	float w = ImageRect.width() * scalNum;
 	float h = ImageRect.height() * scalNum;
 	float x = ((float)win->clientWidth - w) / 2;
 	float y = ((float)win->clientHeight - (float)win->bottomBarHeight - h) / 2;
 	ImageRect.setXYWH(x, y, w, h);
 	IsAutoSize = false;
-	InvalidateRect(win->hwnd, nullptr, false);	
+	App::get()->mainWindow->Refresh();
 }
 void ImageViewer::Rotate()
 {
@@ -56,15 +58,16 @@ void ImageViewer::Rotate()
 	SkBitmap bitmap;
 	bitmap.allocN32Pixels(image->height(), image->width());
 	SkCanvas canvas(bitmap);
-	canvas.translate(0, bitmap.height());
-	canvas.rotate(-90);
-	canvas.drawImage(image, 0, 0);
+	canvas.translate(0.f, (float)bitmap.height());
+	canvas.rotate(-90.f);
+	canvas.drawImage(image, 0.f, 0.f);
 	bitmap.setImmutable();
 	image = bitmap.asImage();
-	InvalidateRect(win->hwnd, nullptr, false);
+	App::get()->mainWindow->Refresh();
 }
 void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 { 	
+	auto win = App::get()->mainWindow.get();
 	auto clientWidth = (float)win->clientWidth;
 	auto clientHeight = (float)(win->clientHeight - win->bottomBarHeight);
 	if (IsAutoSize) {
@@ -138,26 +141,27 @@ void ImageViewer::SaveImage(std::string& path)
 	fileStream.write(data->data(), data->size());
 	fileStream.flush();
 }
-std::shared_ptr<ImageViewer> ImageViewer::MakeImageViewer(const char* path,MainWindow* win)
+void ImageViewer::MakeImageViewer(const char* path)
 {
 	auto skData = SkData::MakeFromFileName(path);
 	std::unique_ptr<SkCodec> codec = SkCodec::MakeFromData(skData);
 	if (!codec) {
 		//todo log
-		return nullptr;
+		return;
 	}
 	auto imgFormat = codec->getEncodedFormat();
-	std::shared_ptr<ImageViewer> result;
+	auto app = App::get();
 	if (imgFormat == SkEncodedImageFormat::kGIF) {
-		auto gifViewer = std::make_shared<GifViewer>();		
+		auto gifViewer = new GifViewer();		
 		gifViewer->DecodeGif(std::move(codec));
-		result = gifViewer;
+		app->imageViewer.reset(gifViewer);
 	}
 	else
 	{
-		result = std::make_shared<ImageViewer>();
-		result->image = SkImage::MakeFromEncoded(skData);
+		auto imageViewer = new ImageViewer();
+		imageViewer->image = SkImage::MakeFromEncoded(skData);
+		app->imageViewer.reset(imageViewer);
 	}
-	result->win = win;	
-	return result;
+	app->mainWindow->Refresh();
+
 }

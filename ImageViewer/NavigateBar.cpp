@@ -1,8 +1,9 @@
 #include "NavigateBar.h"
 #include "MainWindow.h"
 #include "Color.h"
-#include "IconFont.h"
-NavigateBar::NavigateBar(MainWindow* win) :win{ win }
+#include "App.h"
+#include "include/core/SkFont.h"
+NavigateBar::NavigateBar()
 {
 
 }
@@ -13,20 +14,21 @@ NavigateBar::~NavigateBar()
 void NavigateBar::CheckMouseUp(int x, int y)
 {
 	if (mouseEnterLeft) {
-		win->bottomBar->loopFile(false);
+		App::get()->bottomBar->loopFile(false);
 	}
 	if (mouseEnterRight) {
-		win->bottomBar->loopFile(true);
+		App::get()->bottomBar->loopFile(true);
 	}
 }
 void NavigateBar::CheckMouseEnter(int x, int y)
 {
+	auto win = App::get()->mainWindow.get();
 	if (x > 0 && x < w && y>0 && y < win->clientHeight - win->bottomBarHeight) 
 	{
 		if (!mouseEnterLeft) 
 		{
 			mouseEnterLeft = true;
-			InvalidateRect(win->hwnd, nullptr, false);
+			App::get()->mainWindow->Refresh();
 		}
 	}
 	else
@@ -34,21 +36,21 @@ void NavigateBar::CheckMouseEnter(int x, int y)
 		if (mouseEnterLeft) 
 		{
 			mouseEnterLeft = false;
-			InvalidateRect(win->hwnd, nullptr, false);
+			App::get()->mainWindow->Refresh();
 		}		
 	}
 	if (x > win->clientWidth-w && x < win->clientWidth && y>0 && y < win->clientHeight - win->bottomBarHeight) 
 	{
 		if (!mouseEnterRight) {
 			mouseEnterRight = true;
-			InvalidateRect(win->hwnd, nullptr, false);
+			App::get()->mainWindow->Refresh();
 		}		
 	}
 	else
 	{
 		if (mouseEnterRight) {
 			mouseEnterRight = false;
-			InvalidateRect(win->hwnd, nullptr, false);
+			App::get()->mainWindow->Refresh();
 		}		
 	}
 }
@@ -56,8 +58,9 @@ void NavigateBar::Paint(SkCanvas* canvas)
 {	
 	//todo paint border
 	if (!mouseEnterLeft && !mouseEnterRight) return;
-	if (!win->imageViewer) return;
-	auto font = IconFont::Get();
+	if (!App::get()->imageViewer) return;
+	auto win = App::get()->mainWindow.get();
+	auto font = App::get()->iconFont;
 	font->setSize(26);
 	y = ((float)win->clientHeight - (float)win->bottomBarHeight) / 2;
 	SkPaint paint;

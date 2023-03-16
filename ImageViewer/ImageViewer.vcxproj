@@ -146,11 +146,12 @@
     <ClCompile Include="BottomBar.cpp" />
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="GifViewer.cpp" />
-    <ClCompile Include="IconFont.cpp" />
+    <ClCompile Include="App.cpp" />
     <ClCompile Include="ImageViewer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="NavigateBar.cpp" />
+    <ClCompile Include="Tip.cpp" />
     <ClCompile Include="WindowSurface.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,11 +161,12 @@
     <ClInclude Include="DisplayParams.h" />
     <ClInclude Include="ElementEnum.h" />
     <ClInclude Include="GifViewer.h" />
-    <ClInclude Include="IconFont.h" />
+    <ClInclude Include="App.h" />
     <ClInclude Include="ImageViewer.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="NavigateBar.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Tip.h" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="button.ttf" />

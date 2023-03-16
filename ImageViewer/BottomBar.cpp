@@ -4,13 +4,13 @@
 #include "include/core/SkFont.h"
 #include "include/core/SkMaskFilter.h"
 #include "resource.h"
+#include "App.h"
 #include <math.h>
-#include "IconFont.h"
 #include <windows.h>
 #include <shobjidl.h> 
 #include "Converter.h"
 
-BottomBar::BottomBar(MainWindow* win):win{win}
+BottomBar::BottomBar()
 {
 	//todo cursor style
 }
@@ -23,7 +23,7 @@ BottomBar::~BottomBar()
 
 void BottomBar::loopFile(bool isNext)
 {
-	//todo 轮询完成后给给提示
+	//todo 不是图片，给出提示
 	if (imagePath.empty()) return;
 	std::filesystem::path folder{ imagePath };
 	folder.remove_filename();
@@ -60,7 +60,7 @@ void BottomBar::loopFile(bool isNext)
 
 			if (lastFirstFlag != 1) {
 				lastFirstFlag = 1;
-				InvalidateRect(win->hwnd, nullptr, false);
+				App::get()->mainWindow->Refresh();
 			}
 		}
 		return;
@@ -75,17 +75,17 @@ void BottomBar::loopFile(bool isNext)
 				lastFirstWaitingTread = std::make_shared<std::thread>(&BottomBar::lastFirstWaitingFunc, this);				
 			}
 			if (lastFirstFlag != 2) {
-				lastFirstFlag = 2;
-				InvalidateRect(win->hwnd, nullptr, false);
+				lastFirstFlag = 2; 
+				App::get()->mainWindow->Refresh();
 			}
 		}
 		return;
 	}
 	imagePath = resultPath;
 	auto path = ConvertWideToUtf8(resultPath.wstring());
-	win->imageViewer = ImageViewer::MakeImageViewer(path.c_str(), win);
+	ImageViewer::MakeImageViewer(path.c_str());
 	btnCodes[5] = (const char*)u8"\ue6be";
-	InvalidateRect(win->hwnd, nullptr, false);
+	App::get()->mainWindow->Refresh();
 }
 void BottomBar::lastFirstWaitingFunc()
 {
@@ -95,7 +95,7 @@ void BottomBar::lastFirstWaitingFunc()
 		lastFirstWaitingTime -= 20;
 	}
 	lastFirstFlag = 0;
-	InvalidateRect(win->hwnd, nullptr, false);
+	App::get()->mainWindow->Refresh();
 }
 std::string BottomBar::openFileDialog(bool isSave) {
 	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -118,7 +118,7 @@ std::string BottomBar::openFileDialog(bool isSave) {
 				pFileSave->SetFileName(imagePath.filename().wstring().c_str());
 			}
 			pFileSave->SetFileTypes(2, FileTypes);
-			hr = pFileSave->Show(win->hwnd);
+			hr = pFileSave->Show(App::get()->mainWindow.get()->hwnd);
 			if (SUCCEEDED(hr))
 			{
 				IShellItem* pItem;
@@ -152,8 +152,7 @@ void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 	else if (mouseEnterIndex == 0) {
 		auto path = openFileDialog(false);
 		if (path.empty()) return;
-		win->imageViewer = ImageViewer::MakeImageViewer(path.c_str(), win);
-		InvalidateRect(win->hwnd, nullptr, false);
+		ImageViewer::MakeImageViewer(path.c_str());
 		return;
 	}
 	if (imagePath.empty())return;
@@ -164,37 +163,38 @@ void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 		loopFile(true);
 	}
 	else if (mouseEnterIndex == 3) {
-		win->imageViewer->Zoom(0.98);
+		App::get()->imageViewer->Zoom(0.98);
 	}
 	else if (mouseEnterIndex == 4) {
-		win->imageViewer->Zoom(1.02);
+		App::get()->imageViewer->Zoom(1.02);
 	}
 	else if (mouseEnterIndex == 5) {
 		if (btnCodes[5] == (const char*)u8"\ue6f8") 
 		{
-			win->imageViewer->IsAutoSize = true;
+			App::get()->imageViewer->IsAutoSize = true;
 			btnCodes[5] = (const char*)u8"\ue6be";
-			InvalidateRect(win->hwnd, nullptr, false);
+			App::get()->mainWindow->Refresh();
 		}
 		else
 		{
-			win->imageViewer->Zoom(1.f);
+			App::get()->imageViewer->Zoom(1.f);
 		}
 		
 	}
 	else if (mouseEnterIndex == 6) {
 		btnCodes[5] = (const char*)u8"\ue6be";
-		win->imageViewer->Rotate();
+		App::get()->imageViewer->Rotate();
 	}
 	else if (mouseEnterIndex == 7) {
 		auto path =	openFileDialog(true);
 		if (path.empty()) return;
-		win->imageViewer->SaveImage(path);
+		App::get()->imageViewer->SaveImage(path);
 	}
 }
 void BottomBar::CheckMouseEnter(int mouseX, int mouseY)
 {
 	int index = -2;
+	auto win = App::get()->mainWindow.get();
 	auto x = (float)(win->clientWidth - w) / 2;
 	auto y = (float)(win->clientHeight - win->bottomBarHeight);
 	if (mouseX > x && mouseY > y && mouseX < x + w && mouseY < win->clientHeight) {
@@ -205,11 +205,12 @@ void BottomBar::CheckMouseEnter(int mouseX, int mouseY)
 	}
 	if (index != mouseEnterIndex) {
 		mouseEnterIndex = index;
-		InvalidateRect(win->hwnd, nullptr, false);
+		App::get()->mainWindow->Refresh();
 	}
 }
 void BottomBar::Paint(SkCanvas* canvas)
 {
+	auto win = App::get()->mainWindow.get();
 	SkPaint paint;
 	{
 		paint.setColor(ColorWhite);
@@ -223,7 +224,7 @@ void BottomBar::Paint(SkCanvas* canvas)
 	float tempY = y + fontSize / 2 + win->bottomBarHeight / 2;
 	paint.setColor(ColorBlack);
 	paint.setAntiAlias(true);
-	auto font = IconFont::Get();
+	auto font = App::get()->iconFont;
 	font->setSize(fontSize);
 	for (size_t i = 0; i < btnCodes.size(); i++)
 	{
