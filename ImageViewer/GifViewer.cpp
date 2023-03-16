@@ -38,7 +38,6 @@ void GifViewer::DecodeGif(std::unique_ptr<SkCodec> codec)
         auto bitmap = std::make_unique<SkBitmap>();
         bitmap->setInfo(imageInfo);
         bitmap->allocPixels();
-        auto totalTime = 0;
         for (unsigned frame = 0; frame < frameCount; frame++)
         {
             option->fFrameIndex = frame;

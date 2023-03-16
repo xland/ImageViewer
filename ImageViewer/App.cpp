@@ -3,26 +3,30 @@
 #include "Tip.h"
 #include <memory>
 #include "resource.h"
+#include "ImageViewer.h"
+#include "BottomBar.h"
+#include "NavigateBar.h"
 namespace {
 	static App* app{ nullptr };
 }
 App::App(HINSTANCE hinstance):
 	hinstance{hinstance}
+	, iconFont{nullptr}
 {
-
+	initIconFont();
+	initTextFont();
 }
 App::~App()
 {
-
+	delete iconFont;
 }
 void App::initIconFont() {
-	HMODULE instance = GetModuleHandle(NULL);
-	HRSRC resID = FindResource(instance, MAKEINTRESOURCE(IDR_BTNFONT1), L"BTNFONT");
+	HRSRC resID = FindResource(hinstance, MAKEINTRESOURCE(IDR_BTNFONT1), L"BTNFONT");
 	if (resID == 0) {
 		return;
 	}
-	size_t resSize = SizeofResource(instance, resID);
-	HGLOBAL res = LoadResource(instance, resID);
+	size_t resSize = SizeofResource(hinstance, resID);
+	HGLOBAL res = LoadResource(hinstance, resID);
 	if (res == 0) {
 		return;
 	}
@@ -30,6 +34,10 @@ void App::initIconFont() {
 	auto fontData = SkData::MakeWithoutCopy(resPointer, resSize);
 	auto fontFace = SkTypeface::MakeFromData(fontData);
 	iconFont = new SkFont(fontFace);
+}
+void App::initTextFont() {
+	auto fontFace = SkTypeface::MakeFromName("Microsoft YaHei", SkFontStyle::Normal());
+	textFont = new SkFont(fontFace);
 }
 void App::init(HINSTANCE hinstance) {
 	app = new App(hinstance);
@@ -42,4 +50,27 @@ void App::init(HINSTANCE hinstance) {
 }
 App* App::get() {
 	return app;
+}
+void App::dispose()
+{
+	delete app;
+}
+void App::Paint(SkCanvas* canvas)
+{
+	if (imageViewer) {
+		imageViewer->Paint(canvas);
+	}
+	navigateBar->Paint(canvas);
+	bottomBar->Paint(canvas);
+	tip->Paint(canvas);
+}
+void App::CheckMouseEnter(int x, int y)
+{
+	bottomBar->CheckMouseEnter(x, y);
+	navigateBar->CheckMouseEnter(x, y);
+}
+void App::CheckMouseDown(int x, int y)
+{
+	bottomBar->CheckMouseDown(x, y);
+	navigateBar->CheckMouseDown(x, y);
 }

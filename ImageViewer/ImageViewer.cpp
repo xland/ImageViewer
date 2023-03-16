@@ -4,6 +4,7 @@
 #include "include/core/SkFont.h"
 #include "include/core/SkColorFilter.h"
 #include "include/core/SkMaskFilter.h"
+#include "BottomBar.h"
 #include "Color.h"
 #include <math.h>
 #include "App.h"
@@ -25,12 +26,13 @@ void ImageViewer::initMaskShader()
 	//bitmap.allocPixels(info);
 	bitmap.allocN32Pixels(300, 300);
 	SkCanvas canvas(bitmap);
-	SkFont font(SkTypeface::MakeFromName("Microsoft YaHei", SkFontStyle::Normal()), 16.f);
+	auto font = App::get()->textFont;
+	font->setSize(16.f);
 	SkPaint paint;
 	paint.setColor(GetColor(187, 187, 187, 50));
 	paint.setAntiAlias(true);
 	std::wstring Text = L"ÁõÏþÂ×";
-	canvas.drawSimpleText(Text.data(), wcslen(Text.data()) * 2, SkTextEncoding::kUTF16, 90.f, 60.f, font, paint);
+	canvas.drawSimpleText(Text.data(), wcslen(Text.data()) * 2, SkTextEncoding::kUTF16, 90.f, 60.f, *font, paint);
 	bitmap.setImmutable();
 	sk_sp<SkImage> mask = bitmap.asImage();
 	SkMatrix matrix;

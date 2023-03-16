@@ -9,6 +9,8 @@
 #include <windows.h>
 #include <shobjidl.h> 
 #include "Converter.h"
+#include "Tip.h"
+#include "ImageViewer.h"
 
 BottomBar::BottomBar()
 {
@@ -16,9 +18,6 @@ BottomBar::BottomBar()
 }
 BottomBar::~BottomBar()
 {
-	if (lastFirstWaitingTread && lastFirstWaitingTread->joinable()) {
-		lastFirstWaitingTread->join();
-	}
 }
 
 void BottomBar::loopFile(bool isNext)
@@ -50,34 +49,13 @@ void BottomBar::loopFile(bool isNext)
 	}
 	if (resultPath.empty()) {
 		if (!isNext) {
-			lastFirstWaitingTime = 2000;
-			if (lastFirstFlag == 0) {
-				if (lastFirstWaitingTread && lastFirstWaitingTread->joinable()) {
-					lastFirstWaitingTread->join();
-				}
-				lastFirstWaitingTread = std::make_shared<std::thread>(&BottomBar::lastFirstWaitingFunc, this);
-			}
-
-			if (lastFirstFlag != 1) {
-				lastFirstFlag = 1;
-				App::get()->mainWindow->Refresh();
-			}
+			App::get()->tip->Show(L"已是第一张");
 		}
 		return;
 	}
 	if (imagePath == resultPath) {
 		if (isNext) {
-			lastFirstWaitingTime = 2000;
-			if (lastFirstFlag == 0) {				
-				if (lastFirstWaitingTread && lastFirstWaitingTread->joinable()) {
-					lastFirstWaitingTread->join();
-				}
-				lastFirstWaitingTread = std::make_shared<std::thread>(&BottomBar::lastFirstWaitingFunc, this);				
-			}
-			if (lastFirstFlag != 2) {
-				lastFirstFlag = 2; 
-				App::get()->mainWindow->Refresh();
-			}
+			App::get()->tip->Show(L"已是最后一张");
 		}
 		return;
 	}
@@ -85,16 +63,6 @@ void BottomBar::loopFile(bool isNext)
 	auto path = ConvertWideToUtf8(resultPath.wstring());
 	ImageViewer::MakeImageViewer(path.c_str());
 	btnCodes[5] = (const char*)u8"\ue6be";
-	App::get()->mainWindow->Refresh();
-}
-void BottomBar::lastFirstWaitingFunc()
-{
-	while (lastFirstWaitingTime > 0)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
-		lastFirstWaitingTime -= 20;
-	}
-	lastFirstFlag = 0;
 	App::get()->mainWindow->Refresh();
 }
 std::string BottomBar::openFileDialog(bool isSave) {
@@ -145,7 +113,7 @@ std::string BottomBar::openFileDialog(bool isSave) {
 	}
 	return std::string();
 }
-void BottomBar::CheckMouseUp(int mouseX, int mouseY)
+void BottomBar::CheckMouseDown(int mouseX, int mouseY)
 {
 
 	if (mouseEnterIndex == -1) return;
@@ -163,10 +131,10 @@ void BottomBar::CheckMouseUp(int mouseX, int mouseY)
 		loopFile(true);
 	}
 	else if (mouseEnterIndex == 3) {
-		App::get()->imageViewer->Zoom(0.98);
+		App::get()->imageViewer->Zoom(0.98f);
 	}
 	else if (mouseEnterIndex == 4) {
-		App::get()->imageViewer->Zoom(1.02);
+		App::get()->imageViewer->Zoom(1.02f);
 	}
 	else if (mouseEnterIndex == 5) {
 		if (btnCodes[5] == (const char*)u8"\ue6f8") 
@@ -237,29 +205,5 @@ void BottomBar::Paint(SkCanvas* canvas)
 		}
 		canvas->drawString(btnCodes[i], tempX, tempY, *font, paint);		
 		tempX += btnWidth;
-	}
-	if (lastFirstFlag>0) {
-		auto x = (float)(win->clientWidth - 300) / 2;
-		auto y = (float)(win->clientHeight - win->bottomBarHeight - 60)/2;
-		SkRect rect;
-		rect.setXYWH(x, y, 300, 60);
-		paint.setColor(ColorBlack);
-		{
-			SkPaint blur;
-			blur.setColor(ColorWhite);
-			blur.setAlpha(127);
-			blur.setMaskFilter(SkMaskFilter::MakeBlur(kNormal_SkBlurStyle, 3.4f, false));
-			canvas->drawRoundRect(rect, 6, 6, blur);
-		}
-		canvas->drawRoundRect(rect, 6,6,paint);
-		paint.setColor(ColorWhite);
-		SkFont font(SkTypeface::MakeFromName("Microsoft YaHei", SkFontStyle::Normal()), 20);
-		paint.setAntiAlias(true);
-		std::wstring Text = lastFirstFlag == 1 ? L"已是第一张":L"已是最后一张";
-		SkRect rectText;
-		font.measureText(Text.data(), wcslen(Text.data()) * 2, SkTextEncoding::kUTF16, &rectText);
-		x = x+(300-rectText.width())/2+ rectText.x();
-		y = y+(60 - rectText.height()) / 2 - rectText.y();
-		canvas->drawSimpleText(Text.data(), wcslen(Text.data()) * 2, SkTextEncoding::kUTF16, x, y, font, paint);
 	}
 }

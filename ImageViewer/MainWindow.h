@@ -1,9 +1,6 @@
 #pragma once
 #include <Windows.h>
 #include "include/core/SkSurface.h"
-#include "ImageViewer.h"
-#include "BottomBar.h"
-#include "NavigateBar.h"
 #include <chrono>
 struct GrGLInterface;
 class GrDirectContext;

@@ -8,7 +8,6 @@
 #include "include/core/SkStream.h"
 #include "include/core/SkPicture.h"
 #include "include/codec/SkCodec.h"
-#include "GifViewer.h"
 #include "Color.h"
 #include "Converter.h"
 #include "App.h"
@@ -141,8 +140,7 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		}
 		case WM_MOUSELEAVE: {
 			setTracking(false);
-			App::get()->bottomBar->CheckMouseEnter(-1, -1);
-			App::get()->navigateBar->CheckMouseEnter(-1, -1);
+			App::get()->CheckMouseEnter(-1, -1);
 			return 0;
 		}
 		case WM_MOUSEMOVE: 
@@ -150,8 +148,7 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			auto x = GET_X_LPARAM(lParam);
 			auto y = GET_Y_LPARAM(lParam);
 			setTracking(true);
-			App::get()->bottomBar->CheckMouseEnter(x, y);
-			App::get()->navigateBar->CheckMouseEnter(x, y);
+			App::get()->CheckMouseEnter(x, y);
 			return 0;
 		}
 		case WM_LBUTTONDOWN:
@@ -161,8 +158,7 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			auto y = GET_Y_LPARAM(lParam);
 			//OutputDebugStringA("CheckMouseUp");
 			//OutputDebugStringA("\r\n");
-			App::get()->bottomBar->CheckMouseUp(x, y);
-			App::get()->navigateBar->CheckMouseUp(x, y);
+			App::get()->CheckMouseDown(x, y);
 			return 0;
 		}
 		case WM_LBUTTONUP:
@@ -184,12 +180,7 @@ void MainWindow::paint()
 	auto surface = getSurface();
 	auto canvas = surface->getCanvas();
 	canvas->clear(GetColor(248,248,248));
-	auto app = App::get();
-	if (app->imageViewer) {
-		app->imageViewer->Paint(canvas);
-	}	
-	app->navigateBar->Paint(canvas);
-	app->bottomBar->Paint(canvas);
+	App::get()->Paint(canvas);	
 	surface->flushAndSubmit();
 	HDC dc = GetDC(hwnd);
 	SwapBuffers(dc);
