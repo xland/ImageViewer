@@ -5,6 +5,7 @@
 #include "App.h"
 #include "FileHelper.h"
 #include "Converter.h"
+#include <urlmon.h>
 
 GifViewer::GifViewer()
 {
@@ -22,6 +23,7 @@ GifViewer::~GifViewer()
 }
 void GifViewer::Zoom(float scalNum)
 {
+    if (frameImages.empty()) return;
     auto win = App::get()->mainWindow.get();
     if (scalNum == 1.f) {
         ImageRect = SkRect::Make(frameImages[0]->imageInfo().bounds());
@@ -41,6 +43,10 @@ void GifViewer::Rotate()
 }
 void GifViewer::SaveImage(std::string& path)
 {
+    if (!animateThreadResult.valid()) {
+        //todo
+        return;
+    }
     auto pathSrc = ConvertWideToUtf8(App::get()->fileHelper->currentPath.wstring());
     auto data = SkData::MakeFromFileName(pathSrc.c_str());
     SkFILEWStream fileStream(path.c_str());

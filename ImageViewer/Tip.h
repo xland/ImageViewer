@@ -14,7 +14,7 @@ private:
 	std::wstring tipText;
 	float textX{ 0.f };
 	float textY{ 0.f };
-	unsigned textLength{0};
+	size_t textLength{0};
 	unsigned remainTime{ 0 };
 	std::shared_ptr<std::thread> waitingTread{ nullptr };
 	void waitingFunc();

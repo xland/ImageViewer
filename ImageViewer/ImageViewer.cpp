@@ -41,6 +41,7 @@ void ImageViewer::initMaskShader()
 }
 void ImageViewer::Zoom(float scalNum)
 {
+	if (!image) return;
 	auto win = App::get()->mainWindow.get();
 	if (scalNum == 1.f) {
 		ImageRect = SkRect::Make(image->imageInfo().bounds());
@@ -83,7 +84,7 @@ void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 			if (heightRatio > widthRatio) {
 				h = clientHeight;
 				w = imageWidth / heightRatio;
-				y = 0;
+				y = 0.f;
 				x = (clientWidth - w) / 2;
 			}
 			else
@@ -91,7 +92,7 @@ void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 				h = imageHeight / widthRatio;
 				w = clientWidth;
 				y = (clientHeight - h) / 2;
-				x = 0;
+				x = 0.f;
 			}
 		}
 		else if (imageHeight > clientHeight && imageWidth <= clientWidth)
@@ -99,7 +100,7 @@ void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 			float heightRatio = imageHeight / clientHeight;
 			h = clientHeight;
 			w = imageWidth / heightRatio;
-			y = 0;
+			y = 0.f;
 			x = (clientWidth - w) / 2;
 		}
 		else if (imageHeight <= clientHeight && imageWidth > clientWidth) {
@@ -107,7 +108,7 @@ void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 			h = imageHeight / widthRatio;
 			w = clientWidth;
 			y = (clientHeight - h) / 2;
-			x = 0;
+			x = 0.f;
 		}
 		else
 		{
@@ -149,6 +150,7 @@ void ImageViewer::MakeImageViewer(std::string& path)
 	std::unique_ptr<SkCodec> codec = SkCodec::MakeFromData(skData);
 	if (!codec) {
 		//todo log
+		//todo svg and other format
 		return;
 	}
 	auto imgFormat = codec->getEncodedFormat();

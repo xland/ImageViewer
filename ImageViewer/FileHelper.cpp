@@ -21,6 +21,7 @@ void FileHelper::Open()
 }
 void FileHelper::Save()
 {
+	if (currentPath.empty()) return;
 	showFileDialog(true);
 }
 void FileHelper::ShowNext()
