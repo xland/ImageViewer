@@ -143,9 +143,9 @@ void ImageViewer::SaveImage(std::string& path)
 	fileStream.write(data->data(), data->size());
 	fileStream.flush();
 }
-void ImageViewer::MakeImageViewer(const char* path)
+void ImageViewer::MakeImageViewer(std::string& path)
 {
-	auto skData = SkData::MakeFromFileName(path);
+	auto skData = SkData::MakeFromFileName(path.c_str());
 	std::unique_ptr<SkCodec> codec = SkCodec::MakeFromData(skData);
 	if (!codec) {
 		//todo log
@@ -164,6 +164,7 @@ void ImageViewer::MakeImageViewer(const char* path)
 		imageViewer->image = SkImage::MakeFromEncoded(skData);
 		app->imageViewer.reset(imageViewer);
 	}
+	app->bottomBar->btnCodes[5] = (const char*)u8"\ue6be";
 	app->mainWindow->Refresh();
 
 }

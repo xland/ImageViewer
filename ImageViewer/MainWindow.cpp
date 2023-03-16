@@ -1,6 +1,7 @@
 ﻿#include "MainWindow.h"
 #include <Windows.h>
 #include <windowsx.h>
+#include <shobjidl.h> 
 #include <locale>
 #include <string>
 #include "include/core/SkCanvas.h"

@@ -11,7 +11,6 @@ public:
 	void Paint(SkCanvas* canvas);
 	void CheckMouseEnter(int mouseX, int mouseY);
 	void CheckMouseDown(int mouseX, int mouseY);
-	void loopFile(bool isNext);
 	std::vector<const char*> btnCodes{ (const char*)u8"\ueabe"
 		,(const char*)u8"\ue6bf"
 		,(const char*)u8"\ue6ad"
@@ -21,8 +20,6 @@ public:
 		,(const char*)u8"\ue6c2"
 		,(const char*)u8"\ue6c1" };
 private:
-	std::filesystem::path imagePath{};
-	std::string openFileDialog(bool isSave);
 	unsigned fontSize{ 22 };
 	float btnWidth{ 68.f };
 	float x{ 0.f };

@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="BottomBar.cpp" />
     <ClCompile Include="Converter.cpp" />
+    <ClCompile Include="FileHelper.cpp" />
     <ClCompile Include="GifViewer.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="ImageViewer.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="Converter.h" />
     <ClInclude Include="DisplayParams.h" />
     <ClInclude Include="ElementEnum.h" />
+    <ClInclude Include="FileHelper.h" />
     <ClInclude Include="GifViewer.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="ImageViewer.h" />

@@ -10,6 +10,7 @@ class ImageViewer;
 class BottomBar;
 class NavigateBar;
 class Tip;
+class FileHelper;
 class App
 {
 public:	
@@ -26,6 +27,7 @@ public:
 	std::shared_ptr<ImageViewer> imageViewer {nullptr};
 	std::unique_ptr<BottomBar> bottomBar;
 	std::unique_ptr<NavigateBar> navigateBar;
+	std::unique_ptr<FileHelper> fileHelper;
 	SkFont* iconFont;
 	SkFont* textFont;
 	HINSTANCE hinstance;

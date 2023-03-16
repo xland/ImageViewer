@@ -4,6 +4,7 @@
 #include "App.h"
 #include "include/core/SkFont.h"
 #include "BottomBar.h"
+#include "FileHelper.h"
 NavigateBar::NavigateBar()
 {
 
@@ -15,10 +16,10 @@ NavigateBar::~NavigateBar()
 void NavigateBar::CheckMouseDown(int x, int y)
 {
 	if (mouseEnterLeft) {
-		App::get()->bottomBar->loopFile(false);
+		App::get()->fileHelper->ShowPrev();
 	}
 	if (mouseEnterRight) {
-		App::get()->bottomBar->loopFile(true);
+		App::get()->fileHelper->ShowNext();
 	}
 }
 void NavigateBar::CheckMouseEnter(int x, int y)
