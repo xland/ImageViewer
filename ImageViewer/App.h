@@ -23,7 +23,7 @@ public:
 public:
 	std::unique_ptr<MainWindow> mainWindow;
 	std::unique_ptr<Tip> tip;
-	std::unique_ptr<ImageViewer> imageViewer {nullptr};
+	std::shared_ptr<ImageViewer> imageViewer {nullptr};
 	std::unique_ptr<BottomBar> bottomBar;
 	std::unique_ptr<NavigateBar> navigateBar;
 	SkFont* iconFont;
