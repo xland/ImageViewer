@@ -153,6 +153,7 @@
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="NavigateBar.cpp" />
     <ClCompile Include="Tip.cpp" />
+    <ClCompile Include="ImageDownloader.cpp" />
     <ClCompile Include="WindowSurface.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +170,7 @@
     <ClInclude Include="NavigateBar.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Tip.h" />
+    <ClInclude Include="ImageDownloader.h" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="button.ttf" />

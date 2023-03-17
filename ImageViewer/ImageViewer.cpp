@@ -9,8 +9,6 @@
 #include <math.h>
 #include "App.h"
 
-//todo 不支持svg
-
 ImageViewer::ImageViewer()
 {
 	initMaskShader();
@@ -91,7 +89,7 @@ void ImageViewer::Zoom(float scalNum)
 	if (scalNum == 1.f) {
 		ImageRect = SkRect::Make(image->imageInfo().bounds());
 	}
-	App::get()->bottomBar->btnCodes[5] = (const char*)u8"\ue6f8";
+	App::get()->bottomBar->btnCodes[6] = (const char*)u8"\ue6f8";
 	float w = ImageRect.width() * scalNum;
 	float h = ImageRect.height() * scalNum;
 	float x = ((float)win->clientWidth - w) / 2;
@@ -177,7 +175,7 @@ void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 void ImageViewer::Paint(SkCanvas* canvas)
 {
 	if (!isCustomPosition) {
-		CaculatePosition(image); //todo 有些时候没必要做这个计算
+		CaculatePosition(image); 
 	}	
 	canvas->drawImageRect(image, ImageRect, ImageOption);
 	SkPaint paint;	
@@ -213,7 +211,7 @@ void ImageViewer::MakeImageViewer(std::string& path)
 		imageViewer->image = SkImage::MakeFromEncoded(skData);
 		app->imageViewer.reset(imageViewer);
 	}
-	app->bottomBar->btnCodes[5] = (const char*)u8"\ue6be";
+	app->bottomBar->btnCodes[6] = (const char*)u8"\ue6be";
 	app->mainWindow->Refresh();
 
 }

@@ -28,7 +28,7 @@ void GifViewer::Zoom(float scalNum)
     if (scalNum == 1.f) {
         ImageRect = SkRect::Make(frameImages[0]->imageInfo().bounds());
     }
-    App::get()->bottomBar->btnCodes[5] = (const char*)u8"\ue6f8";
+    App::get()->bottomBar->btnCodes[6] = (const char*)u8"\ue6f8";
     float w = ImageRect.width() * scalNum;
     float h = ImageRect.height() * scalNum;
     float x = ((float)win->clientWidth - w) / 2;

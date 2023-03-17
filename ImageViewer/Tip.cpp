@@ -7,7 +7,7 @@
 
 Tip::Tip()
 {
-
+	//todo more tip
 }
 Tip::~Tip()
 {

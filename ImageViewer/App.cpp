@@ -7,6 +7,7 @@
 #include "BottomBar.h"
 #include "NavigateBar.h"
 #include "FileHelper.h"
+#include "ImageDownloader.h"
 namespace {
 	static App* app{ nullptr };
 }
@@ -48,6 +49,7 @@ void App::init(HINSTANCE hinstance) {
 	app->bottomBar = std::make_unique<BottomBar>();
 	app->navigateBar = std::make_unique<NavigateBar>();
 	app->fileHelper = std::make_unique<FileHelper>();
+	app->imageDownloader = std::make_unique<ImageDownloader>();
 	app->mainWindow->Show();
 }
 App* App::get() {

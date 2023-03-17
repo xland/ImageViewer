@@ -10,6 +10,7 @@
 #include "Tip.h"
 #include "ImageViewer.h"
 #include "FileHelper.h"
+#include "ImageDownloader.h"
 
 BottomBar::BottomBar()
 {
@@ -20,27 +21,29 @@ BottomBar::~BottomBar()
 }
 void BottomBar::CheckMouseDown(int mouseX, int mouseY)
 {
-
 	if (mouseEnterIndex == -1) return;
 	else if (mouseEnterIndex == 0) {
-		App::get()->fileHelper->Open();
+		App::get()->imageDownloader->ShowUrlDialog();
 	}
 	else if (mouseEnterIndex == 1) {
-		App::get()->fileHelper->ShowPrev();
+		App::get()->fileHelper->Open();
 	}
 	else if (mouseEnterIndex == 2) {
-		App::get()->fileHelper->ShowNext();
+		App::get()->fileHelper->ShowPrev();
 	}
 	else if (mouseEnterIndex == 3) {
-		App::get()->imageViewer->Zoom(0.98f);
+		App::get()->fileHelper->ShowNext();
 	}
 	else if (mouseEnterIndex == 4) {
-		App::get()->imageViewer->Zoom(1.02f);
+		App::get()->imageViewer->Zoom(0.98f);
 	}
 	else if (mouseEnterIndex == 5) {
-		if (btnCodes[5] == (const char*)u8"\ue6f8") 
+		App::get()->imageViewer->Zoom(1.02f);
+	}
+	else if (mouseEnterIndex == 6) {
+		if (btnCodes[6] == (const char*)u8"\ue6f8") 
 		{
-			btnCodes[5] = (const char*)u8"\ue6be";
+			btnCodes[6] = (const char*)u8"\ue6be";
 			App::get()->imageViewer->AutoSize();
 		}
 		else
@@ -49,11 +52,11 @@ void BottomBar::CheckMouseDown(int mouseX, int mouseY)
 		}
 		
 	}
-	else if (mouseEnterIndex == 6) {
-		btnCodes[5] = (const char*)u8"\ue6be";
+	else if (mouseEnterIndex == 7) {
+		btnCodes[6] = (const char*)u8"\ue6be";
 		App::get()->imageViewer->Rotate();
 	}
-	else if (mouseEnterIndex == 7) {
+	else if (mouseEnterIndex == 8) {
 		App::get()->fileHelper->Save();;
 	}
 }

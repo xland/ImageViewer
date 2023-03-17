@@ -7,7 +7,6 @@
 #include "FileHelper.h"
 NavigateBar::NavigateBar()
 {
-	//todo 只有点到按钮上才给跳转
 }
 NavigateBar::~NavigateBar()
 {
@@ -69,7 +68,6 @@ void NavigateBar::CheckMouseEnter(int x, int y)
 }
 void NavigateBar::Paint(SkCanvas* canvas)
 {	
-	//todo paint border
 	if (!mouseEnterLeft && !mouseEnterRight) return;
 	if (!App::get()->imageViewer) return;
 	auto win = App::get()->mainWindow.get();

@@ -11,6 +11,7 @@ class BottomBar;
 class NavigateBar;
 class Tip;
 class FileHelper;
+class ImageDownloader;
 class App
 {
 public:	
@@ -29,6 +30,7 @@ public:
 	std::unique_ptr<BottomBar> bottomBar;
 	std::unique_ptr<NavigateBar> navigateBar;
 	std::unique_ptr<FileHelper> fileHelper;
+	std::unique_ptr<ImageDownloader> imageDownloader;
 	SkFont* iconFont;
 	SkFont* textFont;
 	HINSTANCE hinstance;

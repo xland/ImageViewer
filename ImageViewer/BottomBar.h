@@ -11,7 +11,8 @@ public:
 	void Paint(SkCanvas* canvas);
 	void CheckMouseEnter(int mouseX, int mouseY);
 	void CheckMouseDown(int mouseX, int mouseY);
-	std::vector<const char*> btnCodes{ (const char*)u8"\ueabe"
+	std::vector<const char*> btnCodes{ (const char*)u8"\ue610" 
+		,(const char*)u8"\ueabe"
 		,(const char*)u8"\ue6bf"
 		,(const char*)u8"\ue6ad"
 		,(const char*)u8"\ue6bd"
@@ -24,7 +25,7 @@ private:
 	float btnWidth{ 68.f };
 	float x{ 0.f };
 	float y{ 0.f };
-	float w{ 8*btnWidth };
+	float w{ 9*btnWidth };
 	int mouseEnterIndex{ -1 };
 };
 
