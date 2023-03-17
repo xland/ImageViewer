@@ -13,13 +13,24 @@ NavigateBar::~NavigateBar()
 {
 
 }
-void NavigateBar::CheckMouseDown(int x, int y)
+bool NavigateBar::isInsideCircle(int cx, int cy, int r, int x, int y) {
+	int dist = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+	if (dist <= r * r)
+		return true;
+	else
+		return false;
+}
+void NavigateBar::CheckMouseDown(int mouseX, int mouseY)
 {
 	if (mouseEnterLeft) {
-		App::get()->fileHelper->ShowPrev();
+		if (isInsideCircle(x1, y, r, mouseX, mouseY)) {
+			App::get()->fileHelper->ShowPrev();
+		}		
 	}
 	if (mouseEnterRight) {
-		App::get()->fileHelper->ShowNext();
+		if (isInsideCircle(x2, y, r, mouseX, mouseY)) {
+			App::get()->fileHelper->ShowNext();
+		}
 	}
 }
 void NavigateBar::CheckMouseEnter(int x, int y)
