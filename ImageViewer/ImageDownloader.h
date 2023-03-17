@@ -8,6 +8,7 @@ public:
 	~ImageDownloader();
 	void ShowUrlDialog();
 	void DownloadImage(std::wstring&& url);
+	void AbortDownload();
 public:
 	bool abortDownloadFlag{ false };
 	std::wstring imageUrl;

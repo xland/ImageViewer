@@ -110,21 +110,22 @@ ImageDownloader::ImageDownloader()
 }
 ImageDownloader::~ImageDownloader()
 {
-	if (downloadThread.joinable()) {
-		downloadThread.join();
-	}
+	AbortDownload();
 }
 void ImageDownloader::ShowUrlDialog()
 {
 	bool flag = downloadThread.joinable();
 	BOOL result = DialogBox(App::get()->hinstance, MAKEINTRESOURCE(IDD_DIALOG1), App::get()->mainWindow->hwnd, (DLGPROC)PromptProc);
 }
+void ImageDownloader::AbortDownload()
+{
+	if (!downloadThread.joinable()) return;
+	abortDownloadFlag = true;
+	downloadThread.join();
+}
 void ImageDownloader::DownloadImage(std::wstring&& url)
 {
-	if (downloadThread.joinable()) {
-		abortDownloadFlag = true;
-		downloadThread.join();
-	}
+	AbortDownload();
 	imageUrl = url;
 	abortDownloadFlag = false;
 	downloadThread = std::thread([this]() {
