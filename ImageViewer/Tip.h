@@ -16,7 +16,7 @@ private:
 	float textY{ 0.f };
 	size_t textLength{0};
 	unsigned remainTime{ 0 };
-	std::shared_ptr<std::thread> waitingTread{ nullptr };
+	std::thread waitingTread;
 	void waitingFunc();
 };
 

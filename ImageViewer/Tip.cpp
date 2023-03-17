@@ -11,8 +11,8 @@ Tip::Tip()
 }
 Tip::~Tip()
 {
-	if (waitingTread && waitingTread->joinable()) {
-		waitingTread->join();
+	if (waitingTread.joinable()) {
+		waitingTread.join();
 	}
 }
 void Tip::waitingFunc()
@@ -22,10 +22,16 @@ void Tip::waitingFunc()
 		std::this_thread::sleep_for(std::chrono::milliseconds(20));
 		remainTime -= 20;
 	}
+	this->tipText = L"";
 	App::get()->mainWindow->Refresh();
 }
 void Tip::Show(std::wstring&& tipText)
 {
+	if (this->tipText == tipText)
+	{
+		remainTime = 2000;
+		return;
+	}
 	this->tipText = tipText;
 	textLength = wcslen(tipText.data()) * 2;
 	auto font = App::get()->textFont;
@@ -40,12 +46,12 @@ void Tip::Show(std::wstring&& tipText)
 	else
 	{
 		remainTime = 2000;
-		if (waitingTread && waitingTread->joinable()) {
-			waitingTread->join();
+		if (waitingTread.joinable()) {
+			waitingTread.join();
 		}
-		waitingTread = std::make_shared<std::thread>(&Tip::waitingFunc, this);
-		App::get()->mainWindow->Refresh();
+		waitingTread = std::thread(&Tip::waitingFunc, this);		
 	}
+	App::get()->mainWindow->Refresh();
 }
 void Tip::Paint(SkCanvas* canvas)
 {
