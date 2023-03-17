@@ -12,6 +12,7 @@
 #include "Color.h"
 #include "Converter.h"
 #include "App.h"
+#include "ImageViewer.h"
 
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -145,6 +146,19 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			auto y = GET_Y_LPARAM(lParam);
 			App::get()->CheckMouseEnter(x, y);
 			setTracking(false);
+			return 0;
+		}
+		case WM_MOUSEWHEEL:
+		{
+			auto delta = GET_WHEEL_DELTA_WPARAM(wParam); //上120，下-120
+			if (delta > 0) 
+			{
+				App::get()->imageViewer->Zoom(1.02f);
+			}
+			else
+			{
+				App::get()->imageViewer->Zoom(0.98f);
+			}
 			return 0;
 		}
 		case WM_MOUSEMOVE: 

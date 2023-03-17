@@ -42,7 +42,8 @@ void ImageViewer::CheckMouseEnter(int x, int y)
 		float w = ImageRect.width();
 		float h = ImageRect.height();
 		auto win = App::get()->mainWindow.get();
-		if (w + x1 < 100 || h + y1 < 100 || win->clientWidth - x1 < 100 || win->clientHeight - y1 <100) return;
+		int edge = 88;
+		if (w + x1 < edge || h + y1 < edge || win->clientWidth - x1 < edge || win->clientHeight-win->bottomBarHeight - y1 < edge) return;
 		ImageRect.setXYWH(x1, y1, w, h);
 		isCustomPosition = true;
 		win->Refresh();
