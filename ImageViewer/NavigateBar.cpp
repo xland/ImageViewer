@@ -7,7 +7,7 @@
 #include "FileHelper.h"
 NavigateBar::NavigateBar()
 {
-
+	//todo 只有点到按钮上才给跳转
 }
 NavigateBar::~NavigateBar()
 {

@@ -56,7 +56,9 @@ void GifViewer::SaveImage(std::string& path)
 void GifViewer::Paint(SkCanvas* canvas)
 {
     if (frameImages.empty()) return;
-    CaculatePosition(frameImages[currentFrame]);
+    if (!isCustomPosition) {
+        CaculatePosition(frameImages[currentFrame]);
+    }
     canvas->drawImageRect(frameImages[currentFrame], ImageRect, ImageOption);
     SkPaint paint;
     paint.setShader(shader);

@@ -19,6 +19,50 @@ ImageViewer::~ImageViewer()
 {
 
 }
+void ImageViewer::CheckMouseUp(int x, int y)
+{
+	isMouseDown = false;
+}
+void ImageViewer::CheckMouseDown(int x, int y)
+{
+	if (!isMouseEnter) return;
+	xSpan = (float)x - ImageRect.x();
+	ySpan = (float)y - ImageRect.y();
+	isMouseDown = true;
+}
+void ImageViewer::CheckMouseEnter(int x, int y)
+{
+	if (ImageRect.isEmpty()) return;
+	if (isMouseDown) {
+
+		float xTemp = ImageRect.x();
+		float yTemp = ImageRect.y();
+		float x1 = (float)x - xSpan;
+		float y1 = (float)y - ySpan;
+		float w = ImageRect.width();
+		float h = ImageRect.height();
+		auto win = App::get()->mainWindow.get();
+		if (w + x1 < 100 || h + y1 < 100 || win->clientWidth - x1 < 100 || win->clientHeight - y1 <100) return;
+		ImageRect.setXYWH(x1, y1, w, h);
+		isCustomPosition = true;
+		win->Refresh();
+		return;
+	}
+	if (x > ImageRect.x() && x < ImageRect.right() && y > ImageRect.y() && y < ImageRect.bottom()) {
+		isMouseEnter = true;
+	}
+	else
+	{
+		isMouseEnter = false;
+	}
+}
+void ImageViewer::AutoSize()
+{
+	if (!image) return;
+	IsAutoSize = true;
+	isCustomPosition = false;
+	App::get()->mainWindow->Refresh();
+}
 void ImageViewer::initMaskShader()
 {
 	SkBitmap bitmap;
@@ -52,6 +96,7 @@ void ImageViewer::Zoom(float scalNum)
 	float x = ((float)win->clientWidth - w) / 2;
 	float y = ((float)win->clientHeight - (float)win->bottomBarHeight - h) / 2;
 	ImageRect.setXYWH(x, y, w, h);
+	isCustomPosition = false;
 	IsAutoSize = false;
 	App::get()->mainWindow->Refresh();
 }
@@ -126,12 +171,13 @@ void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
 		float x = ((float)win->clientWidth - w) / 2;
 		float y = ((float)win->clientHeight - (float)win->bottomBarHeight - h) / 2;
 		ImageRect.setXYWH(x, y, w, h);
-	}
-	
+	}	
 }
 void ImageViewer::Paint(SkCanvas* canvas)
 {
-	CaculatePosition(image); //todo 有些时候没必要做这个计算
+	if (!isCustomPosition) {
+		CaculatePosition(image); //todo 有些时候没必要做这个计算
+	}	
 	canvas->drawImageRect(image, ImageRect, ImageOption);
 	SkPaint paint;	
 	paint.setShader(shader);

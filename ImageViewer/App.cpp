@@ -70,9 +70,21 @@ void App::CheckMouseEnter(int x, int y)
 {
 	bottomBar->CheckMouseEnter(x, y);
 	navigateBar->CheckMouseEnter(x, y);
+	if (imageViewer) {
+		imageViewer->CheckMouseEnter(x, y);
+	}	
+}
+void App::CheckMouseUp(int x, int y)
+{
+	if (imageViewer) {
+		imageViewer->CheckMouseUp(x, y);
+	}
 }
 void App::CheckMouseDown(int x, int y)
 {
 	bottomBar->CheckMouseDown(x, y);
 	navigateBar->CheckMouseDown(x, y);
+	if (imageViewer) {
+		imageViewer->CheckMouseDown(x, y);
+	}
 }

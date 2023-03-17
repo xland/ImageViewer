@@ -99,6 +99,7 @@ bool MainWindow::creatreNativeWindow()
 		return false;
 	}
 	SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
+	
 	return true;
 }
 LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -140,16 +141,18 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			return 0;
 		}
 		case WM_MOUSELEAVE: {
+			auto x = GET_X_LPARAM(lParam);
+			auto y = GET_Y_LPARAM(lParam);
+			App::get()->CheckMouseEnter(x, y);
 			setTracking(false);
-			App::get()->CheckMouseEnter(-1, -1);
 			return 0;
 		}
 		case WM_MOUSEMOVE: 
 		{
 			auto x = GET_X_LPARAM(lParam);
 			auto y = GET_Y_LPARAM(lParam);
-			setTracking(true);
 			App::get()->CheckMouseEnter(x, y);
+			setTracking(true);
 			return 0;
 		}
 		case WM_LBUTTONDOWN:
@@ -157,20 +160,20 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			//leftBtnDownTime = std::chrono::system_clock::now();
 			auto x = GET_X_LPARAM(lParam);
 			auto y = GET_Y_LPARAM(lParam);
-			//OutputDebugStringA("CheckMouseUp");
-			//OutputDebugStringA("\r\n");
+			SetCapture(hwnd);
 			App::get()->CheckMouseDown(x, y);
 			return 0;
 		}
 		case WM_LBUTTONUP:
 		{
 			//GetDoubleClickTime();
-			//auto x = GET_X_LPARAM(lParam);
-			//auto y = GET_Y_LPARAM(lParam);
+			auto x = GET_X_LPARAM(lParam);
+			auto y = GET_Y_LPARAM(lParam);
+			ReleaseCapture();
+			App::get()->CheckMouseUp(x, y);
 			//OutputDebugStringA("CheckMouseUp");
 			//OutputDebugStringA("\r\n");
-			//bottomBar->CheckMouseUp(x, y);
-			//navigateBar->CheckMouseUp(x, y);
+
 			//return DefWindowProc(hwnd, msg, wParam, lParam);
 		}
 	}

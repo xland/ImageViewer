@@ -18,6 +18,7 @@ public:
 	void Paint(SkCanvas* canvas);
 	void CheckMouseEnter(int x, int y);
 	void CheckMouseDown(int x, int y);
+	void CheckMouseUp(int x, int y);
 	static void init(HINSTANCE hinstance);
 	static App* get();
 	static void dispose();

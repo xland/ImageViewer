@@ -34,6 +34,6 @@ private:
 	unsigned height{ 700 };
 	unsigned minWidth{ 800 };
 	unsigned minHeight{ 600 };
-	std::chrono::system_clock::time_point leftBtnDownTime;
+	//std::chrono::system_clock::time_point leftBtnDownTime;
 };
 

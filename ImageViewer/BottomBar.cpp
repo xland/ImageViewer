@@ -40,9 +40,8 @@ void BottomBar::CheckMouseDown(int mouseX, int mouseY)
 	else if (mouseEnterIndex == 5) {
 		if (btnCodes[5] == (const char*)u8"\ue6f8") 
 		{
-			App::get()->imageViewer->IsAutoSize = true;
 			btnCodes[5] = (const char*)u8"\ue6be";
-			App::get()->mainWindow->Refresh();
+			App::get()->imageViewer->AutoSize();
 		}
 		else
 		{
