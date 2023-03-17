@@ -6,8 +6,12 @@
 #include <Urlmon.h>
 #include <functional>
 #include <future>
+#include "ImageViewer.h"
+#include "Converter.h"
 
 namespace {
+
+	//todo 输入框怎么是个多行文本框
     BOOL CALLBACK PromptProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam) {
         BOOL result = FALSE;
         switch (message)
@@ -44,96 +48,59 @@ namespace {
         }
         return FALSE;
     }
-
-
 	class DownloadStatus :public IBindStatusCallback {
 	public:
 		ULONG presize{ 0 };
-		STDMETHOD(OnStartBinding)(
-			/* [in] */ DWORD dwReserved,
-			/* [in] */ IBinding __RPC_FAR* pib)
+		STDMETHOD(OnStartBinding)(DWORD dwReserved,IBinding __RPC_FAR* pib)
+		{
+			return App::get()->imageDownloader->abortDownloadFlag ? E_ABORT : E_NOTIMPL;
+		}
+
+		STDMETHOD(GetPriority)(LONG __RPC_FAR* pnPriority)
 		{
 			return E_NOTIMPL;
 		}
-
-		STDMETHOD(GetPriority)(
-			/* [out] */ LONG __RPC_FAR* pnPriority)
+		STDMETHOD(OnLowResource)(DWORD reserved)
 		{
 			return E_NOTIMPL;
 		}
-
-		STDMETHOD(OnLowResource)(
-			/* [in] */ DWORD reserved)
+		STDMETHOD(OnProgress)(ULONG ulProgress,ULONG ulProgressMax,ULONG ulStatusCode,LPCWSTR wszStatusText)
+		{
+			float ps = 0;
+			if (ulProgressMax != 0) {
+				ps = (float)ulProgress * 100 / ulProgressMax;
+			}
+			return App::get()->imageDownloader->abortDownloadFlag ? E_ABORT : E_NOTIMPL;
+		}
+		STDMETHOD(OnStopBinding)(HRESULT hresult,LPCWSTR szError)
 		{
 			return E_NOTIMPL;
 		}
-
-		STDMETHOD(OnProgress)(
-			/* [in] */ ULONG ulProgress,
-			/* [in] */ ULONG ulProgressMax,
-			/* [in] */ ULONG ulStatusCode,
-			/* [in] */ LPCWSTR wszStatusText);
-
-		STDMETHOD(OnStopBinding)(
-			/* [in] */ HRESULT hresult,
-			/* [unique][in] */ LPCWSTR szError)
+		STDMETHOD(GetBindInfo)(DWORD __RPC_FAR* grfBINDF,BINDINFO __RPC_FAR* pbindinfo)
 		{
 			return E_NOTIMPL;
 		}
-
-		STDMETHOD(GetBindInfo)(
-			/* [out] */ DWORD __RPC_FAR* grfBINDF,
-			/* [unique][out][in] */ BINDINFO __RPC_FAR* pbindinfo)
+		STDMETHOD(OnDataAvailable)(DWORD grfBSCF,DWORD dwSize,FORMATETC __RPC_FAR* pformatetc,STGMEDIUM __RPC_FAR* pstgmed)
 		{
-			return E_NOTIMPL;
+			return App::get()->imageDownloader->abortDownloadFlag ? E_ABORT : E_NOTIMPL;
 		}
-
-		STDMETHOD(OnDataAvailable)(
-			/* [in] */ DWORD grfBSCF,
-			/* [in] */ DWORD dwSize,
-			/* [in] */ FORMATETC __RPC_FAR* pformatetc,
-			/* [in] */ STGMEDIUM __RPC_FAR* pstgmed)
+		STDMETHOD(OnObjectAvailable)(REFIID riid,IUnknown __RPC_FAR* punk)
 		{
-			return E_NOTIMPL;
+			return App::get()->imageDownloader->abortDownloadFlag ? E_ABORT : E_NOTIMPL;
 		}
-
-		STDMETHOD(OnObjectAvailable)(
-			/* [in] */ REFIID riid,
-			/* [iid_is][in] */ IUnknown __RPC_FAR* punk)
-		{
-			return E_NOTIMPL;
-		}
-
-		// IUnknown methods.  Note that IE never calls any of these methods, since
-		// the caller owns the IBindStatusCallback interface, so the methods all
-		// return zero/E_NOTIMPL.
-
 		STDMETHOD_(ULONG, AddRef)()
 		{
-			return 0;
+			return E_NOTIMPL;
 		}
-
 		STDMETHOD_(ULONG, Release)()
 		{
-			return 0;
+			return E_NOTIMPL;
 		}
-
-		STDMETHOD(QueryInterface)(
-			/* [in] */ REFIID riid,
-			/* [iid_is][out] */ void __RPC_FAR* __RPC_FAR* ppvObject)
+		STDMETHOD(QueryInterface)(REFIID riid,void __RPC_FAR* __RPC_FAR* ppvObject)
 		{
 			return E_NOTIMPL;
 		}
 	};
-	HRESULT DownloadStatus::OnProgress(ULONG ulProgress, ULONG ulProgressMax, ULONG ulStatusCode, LPCWSTR wszStatusText)
-	{
-		//float ps = 0;
-		//if (ulProgressMax != 0) {
-		//	ps = (float)ulProgress * 100 / ulProgressMax;
-		//}
-		return S_OK;
-	}
-
 }
 
 
@@ -143,16 +110,31 @@ ImageDownloader::ImageDownloader()
 }
 ImageDownloader::~ImageDownloader()
 {
-
+	if (downloadThread.joinable()) {
+		downloadThread.join();
+	}
 }
 void ImageDownloader::ShowUrlDialog()
 {
+	bool flag = downloadThread.joinable();
 	BOOL result = DialogBox(App::get()->hinstance, MAKEINTRESOURCE(IDD_DIALOG1), App::get()->mainWindow->hwnd, (DLGPROC)PromptProc);
 }
 void ImageDownloader::DownloadImage(std::wstring&& url)
 {
-    DownloadStatus ds;
-	LPTSTR userInputValue = new TCHAR[MAX_PATH];
-	URLDownloadToCacheFile(nullptr, url.c_str(), userInputValue, MAX_PATH, 0,&ds);
-	int a = 1;	
+	if (downloadThread.joinable()) {
+		abortDownloadFlag = true;
+		downloadThread.join();
+	}
+	imageUrl = url;
+	abortDownloadFlag = false;
+	downloadThread = std::thread([this]() {
+		DownloadStatus ds;
+		LPTSTR cacheFilePath = new TCHAR[MAX_PATH];
+		URLDownloadToCacheFile(nullptr, this->imageUrl.c_str(), cacheFilePath, MAX_PATH, 0, &ds);
+		std::wstringstream ss;
+		ss << cacheFilePath;
+		delete[] cacheFilePath;
+		auto path = ConvertWideToUtf8(ss.str());
+		ImageViewer::MakeImageViewer(path);
+	});
 }
