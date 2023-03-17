@@ -4,6 +4,8 @@
 #include <chrono>
 #include <future>
 #include "include/core/SkCanvas.h"
+#include <mutex> 
+#include <condition_variable>
 class GifViewer:public ImageViewer
 {
 public:
@@ -23,5 +25,7 @@ private:
 	bool running{ true };
 	std::shared_future<void> animateThreadResult;
 	std::thread decodeThread;
+	std::mutex locker;
+	std::condition_variable cv;
 };
 

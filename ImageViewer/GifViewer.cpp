@@ -5,7 +5,6 @@
 #include "App.h"
 #include "FileHelper.h"
 #include "Converter.h"
-#include <urlmon.h>
 
 GifViewer::GifViewer()
 {
@@ -55,9 +54,10 @@ void GifViewer::SaveImage(std::string& path)
 }
 void GifViewer::Paint(SkCanvas* canvas)
 {
-    if (frameImages.empty()) return;
+    if (frameImages.empty() || currentFrame >= frameImages.size()) return;
     if (!isCustomPosition) {
-        CaculatePosition(frameImages[currentFrame]);
+        //https://camo.githubusercontent.com/ffc8689dce447863f80b1404350456817531767dbe6c78b6a048b85fc999d288/68747470733a2f2f6c66332d7374617469632e62797465646e73646f632e636f6d2f6f626a2f6564656e2d636e2f70746c7a5f7a6c702f6c6a68775a74686c61756b6a6c6b756c7a6c702f73656d692d696e666f2d312e676966
+        CaculatePosition(frameImages[currentFrame]); //28Õë»á³ö´í
     }
     canvas->drawImageRect(frameImages[currentFrame], ImageRect, ImageOption);
     SkPaint paint;
@@ -78,8 +78,7 @@ void GifViewer::DecodeGif(std::unique_ptr<SkCodec> codec)
         for (unsigned frame = 0; frame < frameCount; frame++)
         {
             option->fFrameIndex = frame;
-            auto duration = frameInfo[frame].fDuration;
-            durations.push_back(duration);
+            durations.push_back(frameInfo[frame].fDuration);
             auto dataPointer = bitmap->getPixels();
             codec->getPixels(imageInfo, dataPointer, imageInfo.minRowBytes(), option.get());
             frameImages.push_back(bitmap->asImage());
@@ -87,7 +86,6 @@ void GifViewer::DecodeGif(std::unique_ptr<SkCodec> codec)
                 break;
             }
             if (frame == 0) {
-                InvalidateRect(win->hwnd, nullptr, false);
                 animateThreadResult = std::async(&GifViewer::animateThread, this);
             }
         }
@@ -97,16 +95,16 @@ void GifViewer::animateThread()
 {
     while (running)
     {
-        auto duration = durations[currentFrame];
-        std::this_thread::sleep_for(std::chrono::milliseconds(duration));
-        currentFrame += 1;
-        if (currentFrame >= durations.size()) {
-            if (currentFrame < frameCount) {
-                currentFrame -= 1;
-                continue;
-            }
+        if (currentFrame < frameCount && currentFrame >= frameImages.size())
+        {
+            continue;
+        }
+        if(currentFrame >= frameCount) 
+        {
             currentFrame = 0;
         }
         App::get()->mainWindow->Refresh();
+        std::this_thread::sleep_for(std::chrono::milliseconds(durations[currentFrame]));
+        currentFrame += 1;
     }
 }
