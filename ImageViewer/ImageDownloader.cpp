@@ -114,8 +114,6 @@ ImageDownloader::~ImageDownloader()
 }
 void ImageDownloader::ShowUrlDialog()
 {
-	//std::string a = "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE\\MUD3I3BG\\a.gif";
-	//ImageViewer::MakeImageViewer(a);
 	bool flag = downloadThread.joinable();
 	BOOL result = DialogBox(App::get()->hinstance, MAKEINTRESOURCE(IDD_DIALOG1), App::get()->mainWindow->hwnd, (DLGPROC)PromptProc);
 }
