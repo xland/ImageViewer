@@ -4,6 +4,8 @@
 #include <chrono>
 #include <future>
 #include "include/core/SkCanvas.h"
+#include <vector>
+#include <map>
 class GifViewer:public ImageViewer
 {
 public:
@@ -15,13 +17,10 @@ public:
 	void Rotate() override;
 	void SaveImage(std::string& path) override;
 private:
-	void animateThread();
-	int frameCount{ 0 };
-	unsigned currentFrame{ 0 };
-	std::vector<int> durations;
-	std::vector<sk_sp<SkImage>> frameImages;
+	std::map<int, sk_sp<SkImage>> frames;
+	unsigned currentFrameIndex {0};
+	unsigned frameCount{ 0 };
 	bool running{ true };
-	std::shared_future<void> animateThreadResult;
 	std::thread decodeThread;
 };
 

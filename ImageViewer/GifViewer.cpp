@@ -5,28 +5,31 @@
 #include "App.h"
 #include "FileHelper.h"
 #include "Converter.h"
-#include <urlmon.h>
+#include <future>
+#include <condition_variable>
+#include <math.h>
+
+namespace {
+    std::mutex locker;
+    std::condition_variable cv;
+}
 
 GifViewer::GifViewer()
 {
-
 }
 GifViewer::~GifViewer()
 {
     running = false;
+    cv.notify_all();
     if (decodeThread.joinable()) {
         decodeThread.join();
     }
-    if (animateThreadResult.valid()) {
-        animateThreadResult.wait();
-    }    
 }
 void GifViewer::Zoom(float scalNum)
 {
-    if (frameImages.empty()) return;
     auto win = App::get()->mainWindow.get();
     if (scalNum == 1.f) {
-        ImageRect = SkRect::Make(frameImages[0]->imageInfo().bounds());
+        //ImageRect = SkRect::Make(currentFrameImage->imageInfo().bounds());
     }
     App::get()->bottomBar->btnCodes[6] = (const char*)u8"\ue6f8";
     float w = ImageRect.width() * scalNum;
@@ -43,10 +46,6 @@ void GifViewer::Rotate()
 }
 void GifViewer::SaveImage(std::string& path)
 {
-    if (!animateThreadResult.valid()) {
-        //todo
-        return;
-    }
     auto pathSrc = ConvertWideToUtf8(App::get()->fileHelper->currentPath.wstring());
     auto data = SkData::MakeFromFileName(pathSrc.c_str());
     SkFILEWStream fileStream(path.c_str());
@@ -55,58 +54,45 @@ void GifViewer::SaveImage(std::string& path)
 }
 void GifViewer::Paint(SkCanvas* canvas)
 {
-    if (frameImages.empty()) return;
+    std::unique_lock guard(locker);
     if (!isCustomPosition) {
-        CaculatePosition(frameImages[currentFrame]);
+        //CaculatePosition(currentFrameImage);
     }
-    canvas->drawImageRect(frameImages[currentFrame], ImageRect, ImageOption);
+    //canvas->drawImageRect(currentFrameImage, ImageRect, ImageOption);
+    guard.unlock();
     SkPaint paint;
     paint.setShader(shader);
     canvas->drawPaint(paint);
 }
-void GifViewer::DecodeGif(std::unique_ptr<SkCodec> codec)
+void GifViewer::DecodeGif(std::unique_ptr<SkCodec> _codec)
 {
-    decodeThread = std::thread([this](std::unique_ptr<SkCodec> codec){
-        auto win = App::get()->mainWindow.get();
-        auto imageInfo = codec->getInfo();
-        frameCount = codec->getFrameCount();
-        auto option = std::make_unique<SkCodec::Options>();
-        auto frameInfo = codec->getFrameInfo();
-        auto bitmap = std::make_unique<SkBitmap>();
-        bitmap->setInfo(imageInfo);
-        bitmap->allocPixels();
-        for (unsigned frame = 0; frame < frameCount; frame++)
-        {
-            option->fFrameIndex = frame;
-            auto duration = frameInfo[frame].fDuration;
-            durations.push_back(duration);
-            auto dataPointer = bitmap->getPixels();
-            codec->getPixels(imageInfo, dataPointer, imageInfo.minRowBytes(), option.get());
-            frameImages.push_back(bitmap->asImage());
-            if (!running) {
-                break;
-            }
-            if (frame == 0) {
-                InvalidateRect(win->hwnd, nullptr, false);
-                animateThreadResult = std::async(&GifViewer::animateThread, this);
-            }
-        }
-    },std::move(codec));
-}
-void GifViewer::animateThread()
-{
-    while (running)
+    auto codec = _codec.release();
+    frameCount = codec->getFrameCount();        
+    auto frameInfo = codec->getFrameInfo();
+    auto frameCountPerThread = 8;
+    auto threadCount = (int)std::ceil(frameCount / frameCountPerThread);
+    for (size_t i = 0; i <= threadCount; i++)
     {
-        auto duration = durations[currentFrame];
-        std::this_thread::sleep_for(std::chrono::milliseconds(duration));
-        currentFrame += 1;
-        if (currentFrame >= durations.size()) {
-            if (currentFrame < frameCount) {
-                currentFrame -= 1;
-                continue;
+        size_t index = i * frameCountPerThread;
+        size_t endIndex = index + frameCountPerThread;
+        if (endIndex >= frameCount) endIndex = frameCount - 1;
+        auto decodeThread = std::thread([this](size_t index, size_t endIndex,SkCodec* codec) {
+            for (; index < endIndex; index++)
+            {
+                SkCodec::Options option;
+                option.fFrameIndex = index;
+                //auto start = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                auto imageInfo = codec->getInfo();
+                std::unique_lock guard(locker);
+                auto result = codec->getImage(imageInfo, &option);
+                frames.insert({ index, std::get<0>(result) });
+                guard.unlock();
+                auto str = std::to_string(index) + "\r\n";
+                OutputDebugStringA(str.c_str());
             }
-            currentFrame = 0;
-        }
-        App::get()->mainWindow->Refresh();
+        }, index, endIndex,codec);
+        decodeThread.detach();
     }
+
+    
 }
