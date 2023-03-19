@@ -15,11 +15,7 @@ public:
 	void Rotate() override;
 	void SaveImage(std::string& path) override;
 private:
-	void animateThread();
-	int frameCount{ 0 };
-	unsigned currentFrame{ 0 };
-	std::vector<int> durations;
-	std::vector<sk_sp<SkImage>> frameImages;
+	std::shared_ptr<SkBitmap> frameImage;
 	bool running{ true };
 	std::shared_future<void> animateThreadResult;
 	std::thread decodeThread;
