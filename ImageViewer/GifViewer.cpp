@@ -100,40 +100,40 @@ void GifViewer::Paint(SkCanvas* canvas)
 }
 void GifViewer::DecodeGif(std::unique_ptr<SkCodec> codec)
 {
-    decodeThread = std::thread([this](std::unique_ptr<SkCodec> codec){       
-        auto frameCount = codec->getFrameCount();
-        SkCodec::Options option;
-        option.fFrameIndex = 0;
-        option.fPriorFrame = -1;
-        auto imageInfo = codec->getInfo().makeColorType(kN32_SkColorType);
-        auto frameInfo = codec->getFrameInfo();
-        while (running)
+decodeThread = std::thread([this](std::unique_ptr<SkCodec> codec){       
+    auto frameCount = codec->getFrameCount();
+    SkCodec::Options option;
+    option.fFrameIndex = 0;
+    option.fPriorFrame = -1;
+    auto imageInfo = codec->getInfo().makeColorType(kN32_SkColorType);
+    auto frameInfo = codec->getFrameInfo();
+    while (running)
+    {
+        auto start = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();            
+        std::shared_ptr<SkBitmap> image = std::make_shared<SkBitmap>();
+        image->allocPixels(imageInfo);
+        if (option.fFrameIndex != 0)
         {
-            auto start = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();            
-            std::shared_ptr<SkBitmap> image = std::make_shared<SkBitmap>();
-            image->allocPixels(imageInfo);
-            if (option.fFrameIndex != 0)
-            {
-                copy_to(image.get(), frameImage->colorType(), *frameImage.get());
-            }
-            codec->getPixels(imageInfo, image->getPixels(), image->rowBytes(), &option);
-            std::unique_lock guard(locker);
-            frameImage = image;
-            guard.unlock();
-            App::get()->mainWindow->Refresh();
-            auto end = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            auto span = frameInfo[option.fFrameIndex].fDuration - (end - start);
-            std::this_thread::sleep_for(std::chrono::milliseconds(span));
-            if (option.fFrameIndex == frameCount - 1)
-            {
-                option.fPriorFrame = -1;
-                option.fFrameIndex = 0;
-            }
-            else
-            {
-                option.fPriorFrame = option.fPriorFrame + 1;
-                option.fFrameIndex = option.fFrameIndex + 1;
-            }            
+            copy_to(image.get(), frameImage->colorType(), *frameImage.get());
         }
-    },std::move(codec));
+        codec->getPixels(imageInfo, image->getPixels(), image->rowBytes(), &option);
+        std::unique_lock guard(locker);
+        frameImage = image;
+        guard.unlock();
+        App::get()->mainWindow->Refresh();
+        auto end = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        auto span = frameInfo[option.fFrameIndex].fDuration - (end - start);
+        std::this_thread::sleep_for(std::chrono::milliseconds(span));
+        if (option.fFrameIndex == frameCount - 1)
+        {
+            option.fPriorFrame = -1;
+            option.fFrameIndex = 0;
+        }
+        else
+        {
+            option.fPriorFrame = option.fPriorFrame + 1;
+            option.fFrameIndex = option.fFrameIndex + 1;
+        }            
+    }
+},std::move(codec));
 }
