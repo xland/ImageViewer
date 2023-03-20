@@ -1,6 +1,4 @@
 ﻿#include "MainWindow.h"
-#include <Windows.h>
-#include <windowsx.h>
 #include <shobjidl.h> 
 #include <locale>
 #include <string>
@@ -39,8 +37,8 @@ MainWindow::MainWindow()
 		//todo error
 		return;
 	}
+	//initToolTip();
 	initSurface();
-	
 }
 MainWindow::~MainWindow()
 {
@@ -145,6 +143,7 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			auto x = GET_X_LPARAM(lParam);
 			auto y = GET_Y_LPARAM(lParam);
 			App::get()->CheckMouseEnter(x, y);
+			//HideToolTip();
 			setTracking(false);
 			return 0;
 		}
@@ -193,6 +192,40 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
+//void MainWindow::ShowToolTip(std::string&& key,unsigned x,unsigned y)
+//{
+//	auto tipText = App::getText(std::move(key));
+//	ti.lpszText = (LPWSTR)tipText.c_str();
+//	POINT pt = { x, y };
+//	ClientToScreen(hwnd, &pt);
+//	SendMessage(hwndToolTip, TTM_TRACKPOSITION, 0, (LPARAM)MAKELONG(pt.x + 10, pt.y - 20));
+//	SendMessage(hwndToolTip, TTM_SETTOOLINFO, 0, (LPARAM)&ti);
+//	SendMessage(hwndToolTip, TTM_TRACKACTIVATE, (WPARAM)TRUE, (LPARAM)&ti);
+//}
+//void MainWindow::HideToolTip()
+//{
+//	SendMessage(hwndToolTip, TTM_TRACKACTIVATE, (WPARAM)FALSE, (LPARAM)&ti);
+//	ShowWindow(hwndToolTip, SW_HIDE);
+//}
+//void MainWindow::initToolTip()
+//{
+//	hwndToolTip = CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL,
+//		WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
+//		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+//		hwnd, NULL, App::get()->hinstance, NULL);
+//	if (!hwndToolTip)
+//	{
+//		return;
+//	}	
+//	ti.cbSize = sizeof(TOOLINFO);
+//	ti.uFlags = TTF_IDISHWND | TTF_TRACK | TTF_ABSOLUTE;
+//	ti.hwnd = hwnd;
+//	ti.hinst = App::get()->hinstance;
+//	ti.lpszText = (LPWSTR)L"提示提示";
+//	ti.uId = (UINT_PTR)hwnd;
+//	GetClientRect(hwnd, &ti.rect);
+//	SendMessage(hwndToolTip, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
+//}
 void MainWindow::paint()
 {
 	auto surface = getSurface();

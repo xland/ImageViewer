@@ -1,7 +1,6 @@
 #pragma once
 #include "include/core/SkCanvas.h"
-#include <sstream>
-#include <filesystem>
+#include <variant>
 class MainWindow;
 class BottomBar
 {
@@ -22,10 +21,7 @@ public:
 		,(const char*)u8"\ue6c1" };
 private:
 	unsigned fontSize{ 22 };
-	float btnWidth{ 68.f };
-	float x{ 0.f };
-	float y{ 0.f };
-	float w{ 9*btnWidth };
+	std::vector<SkRect> btnRects;
 	int mouseEnterIndex{ -1 };
 };
 

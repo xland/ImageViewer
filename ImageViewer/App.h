@@ -3,6 +3,7 @@
 #include "include/core/SkFont.h"
 #include "include/core/SkCanvas.h"
 #include <memory>
+#include <string>
 
 class MainWindow;
 class Tip;
@@ -22,6 +23,7 @@ public:
 	void CheckMouseUp(int x, int y);
 	static void init(HINSTANCE hinstance);
 	static App* get();
+	static std::wstring getText(std::string&& key);
 	static void dispose();
 public:
 	std::unique_ptr<MainWindow> mainWindow;

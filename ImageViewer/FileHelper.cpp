@@ -60,13 +60,13 @@ void FileHelper::loopFile(bool isNext)
 	}
 	if (resultPath.empty()) {
 		if (!isNext) {
-			App::get()->tip->Show(L"已是第一张");
+			App::get()->tip->Show(App::getText("isFirstOne"));
 		}
 		return;
 	}
 	if (currentPath == resultPath) {
 		if (isNext) {
-			App::get()->tip->Show(L"已是最后一张");
+			App::get()->tip->Show(App::getText("isLastOne"));
 		}
 		return;
 	}

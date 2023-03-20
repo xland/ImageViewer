@@ -14,7 +14,16 @@
 
 BottomBar::BottomBar()
 {
-	//todo cursor style
+	auto win = App::get()->mainWindow.get();
+	float btnWidth{ 68.f };
+	auto x = (float)(win->clientWidth - btnCodes.size()*btnWidth) / 2;
+	auto y = (float)(win->clientHeight - win->bottomBarHeight);
+	for (size_t i = 0; i < btnCodes.size(); i++) {
+		SkRect rect;
+		rect.setXYWH(x, y, btnWidth, win->bottomBarHeight);
+		btnRects.push_back(rect);
+		x += btnWidth;
+	}
 }
 BottomBar::~BottomBar()
 {
@@ -60,38 +69,32 @@ void BottomBar::CheckMouseDown(int mouseX, int mouseY)
 		App::get()->fileHelper->Save();;
 	}
 }
-void BottomBar::CheckMouseEnter(int mouseX, int mouseY)
+void BottomBar::CheckMouseEnter(int x, int y)
 {
 	int index = -2;
-	auto win = App::get()->mainWindow.get();
-	auto x = (float)(win->clientWidth - w) / 2;
-	auto y = (float)(win->clientHeight - win->bottomBarHeight);
-	if (mouseX > x && mouseY > y && mouseX < x + w && mouseY < win->clientHeight) {
-		index = (unsigned)std::floor((mouseX - x) / btnWidth);
+	for (size_t i = 0; i < btnRects.size(); i++)
+	{
+		if (x > btnRects[i].x() && y > btnRects[i].y() && x < btnRects[i].right() && y < btnRects[i].bottom()) {
+			index = i;
+			break;
+		}
 	}
-	else {
-		index = -1;
-	}
+	index = -1;
 	if (index != mouseEnterIndex) {
 		mouseEnterIndex = index;
-		App::get()->mainWindow->Refresh();
+		App::get()->mainWindow->Refresh(); //hover
 	}
 }
 void BottomBar::Paint(SkCanvas* canvas)
 {
 	auto win = App::get()->mainWindow.get();
-	auto x = (float)(win->clientWidth - w) / 2;
-	auto y = (float)(win->clientHeight - win->bottomBarHeight);
 	SkPaint paint;
 	{
-		//»­µ×²¿À¸µÄ°×É«±³¾°
 		paint.setColor(ColorWhite);
 		SkRect rect;
-		rect.setXYWH(0, y, (float)win->clientWidth, (float)win->bottomBarHeight);
+		rect.setXYWH(0, btnRects[0].y(), (float)win->clientWidth, (float)win->bottomBarHeight);
 		canvas->drawRect(rect, paint);
 	}	
-	float tempX = x + fontSize;
-	float tempY = y + fontSize / 2 + win->bottomBarHeight / 2;
 	paint.setColor(ColorBlack);
 	paint.setAntiAlias(true);
 	auto font = App::get()->iconFont;
@@ -100,12 +103,11 @@ void BottomBar::Paint(SkCanvas* canvas)
 	{
 		if (i == mouseEnterIndex) {
 			paint.setColor(GetColor(230,230,230));
-			SkRect rect;
-			rect.setXYWH(tempX-fontSize, y, btnWidth, (float)win->bottomBarHeight);
-			canvas->drawRect(rect, paint);
+			canvas->drawRect(btnRects[i], paint);
 			paint.setColor(ColorBlack);
 		}
-		canvas->drawString(btnCodes[i], tempX, tempY, *font, paint);		
-		tempX += btnWidth;
+		auto x = btnRects[i].x() + fontSize;
+		auto y = btnRects[i].y() + fontSize / 2 + win->bottomBarHeight / 2;
+		canvas->drawString(btnCodes[i], x, y, *font, paint);
 	}
 }
