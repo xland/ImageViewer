@@ -12,7 +12,7 @@ ToolTip::~ToolTip()
 {
 
 }
-void ToolTip::RegToolTip(const char* key, RECT rect)
+void ToolTip::RegToolTip(const char* key, RECT rect,unsigned id)
 {
     if (tooltipInfos.contains(key)) {
         auto ti = tooltipInfos.at(key);
@@ -26,6 +26,7 @@ void ToolTip::RegToolTip(const char* key, RECT rect)
         ti.uFlags = TTF_SUBCLASS;
         ti.hwnd = App::get()->mainWindow->hwnd;
         ti.hinst = App::get()->hinstance;
+        ti.uId = id;
         auto tipText = App::getText(key);
         ti.lpszText = (LPWSTR)tipText.c_str();
         ti.rect = rect;

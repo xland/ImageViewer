@@ -86,7 +86,6 @@ void GifViewer::SaveImage(std::string& path)
 }
 void GifViewer::Paint(SkCanvas* canvas)
 {
-
     if (!frameImage) return;
     std::unique_lock guard(locker);
     auto image = frameImage->asImage();

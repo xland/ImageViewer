@@ -9,7 +9,7 @@ class ToolTip
 public:
 	ToolTip();
 	~ToolTip();
-	void RegToolTip(const char* key, RECT rect);
+	void RegToolTip(const char* key, RECT rect, unsigned id);
 private:
 	HWND hwnd;
 	std::map<std::string, TOOLINFO> tooltipInfos;

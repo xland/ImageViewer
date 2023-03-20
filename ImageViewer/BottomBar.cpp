@@ -31,7 +31,7 @@ void BottomBar::Resize(const unsigned& w, const unsigned& h)
 		auto& key = std::get<0>(btns[i]);
 		rect.setXYWH(x, y, btnWidth, win->bottomBarHeight);
 		RECT r{ (long)x, (long)y, (long)rect.right(), (long)rect.bottom() };
-		App::get()->tooltip->RegToolTip(key, r);
+		App::get()->tooltip->RegToolTip(key, r,100+i);
 		x += btnWidth;
 	}
 }
