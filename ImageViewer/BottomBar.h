@@ -1,6 +1,6 @@
 #pragma once
 #include "include/core/SkCanvas.h"
-#include <variant>
+#include <tuple>
 class MainWindow;
 class BottomBar
 {
@@ -10,18 +10,20 @@ public:
 	void Paint(SkCanvas* canvas);
 	void CheckMouseEnter(int mouseX, int mouseY);
 	void CheckMouseDown(int mouseX, int mouseY);
-	std::vector<const char*> btnCodes{ (const char*)u8"\ue610" 
-		,(const char*)u8"\ueabe"
-		,(const char*)u8"\ue6bf"
-		,(const char*)u8"\ue6ad"
-		,(const char*)u8"\ue6bd"
-		,(const char*)u8"\ue6c0"
-		,(const char*)u8"\ue6be"
-		,(const char*)u8"\ue6c2"
-		,(const char*)u8"\ue6c1" };
+	void Resize(const unsigned& w, const unsigned& h);
+	std::vector<std::tuple<const char*,const char*,SkRect>> btns {
+		{"url",(const char*)u8"\ue610",SkRect::MakeEmpty()},
+		{"folder",(const char*)u8"\ueabe",SkRect::MakeEmpty()},
+		{"previousOne",(const char*)u8"\ue6bf",SkRect::MakeEmpty()},
+		{"nextOne",(const char*)u8"\ue6ad",SkRect::MakeEmpty()},
+		{"zoomOut",(const char*)u8"\ue6bd",SkRect::MakeEmpty()},
+		{"zoomIn",(const char*)u8"\ue6c0",SkRect::MakeEmpty()},
+		{"originSize",(const char*)u8"\ue6be",SkRect::MakeEmpty()},
+		{"rotate",(const char*)u8"\ue6c2",SkRect::MakeEmpty()},
+		{"download",(const char*)u8"\ue6c1",SkRect::MakeEmpty()}
+	};
 private:
 	unsigned fontSize{ 22 };
-	std::vector<SkRect> btnRects;
 	int mouseEnterIndex{ -1 };
 };
 

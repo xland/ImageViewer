@@ -3,13 +3,15 @@
 #include <Windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <map>
 class ToolTip
 {
 public:
 	ToolTip();
 	~ToolTip();
-	void RegToolTip(std::string&& key, RECT rect);
+	void RegToolTip(const char* key, RECT rect);
 private:
 	HWND hwnd;
+	std::map<std::string, TOOLINFO> tooltipInfos;
 };
 

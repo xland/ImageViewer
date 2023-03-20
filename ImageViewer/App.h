@@ -13,17 +13,19 @@ class NavigateBar;
 class Tip;
 class FileHelper;
 class ImageDownloader;
+class ToolTip;
 class App
 {
 public:	
 	~App();
 	void Paint(SkCanvas* canvas);
 	void CheckMouseEnter(int x, int y);
+	void Resize(const unsigned& w, const unsigned& h);
 	void CheckMouseDown(int x, int y);
 	void CheckMouseUp(int x, int y);
 	static void init(HINSTANCE hinstance);
 	static App* get();
-	static std::wstring getText(std::string&& key);
+	static std::wstring getText(const char* key);
 	static void dispose();
 public:
 	std::unique_ptr<MainWindow> mainWindow;
@@ -33,6 +35,7 @@ public:
 	std::unique_ptr<NavigateBar> navigateBar;
 	std::unique_ptr<FileHelper> fileHelper;
 	std::unique_ptr<ImageDownloader> imageDownloader;
+	std::unique_ptr<ToolTip> tooltip;
 	SkFont* iconFont;
 	SkFont* textFont;
 	HINSTANCE hinstance;

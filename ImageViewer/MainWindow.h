@@ -30,7 +30,7 @@ private:
 	sk_sp<SkSurface> getSurface();
 	void disposeSurfaceResource();
 	void initSurface();
-	//void initToolTip();
+	void initToolTip();
 private:
 	int stencilBits{ 0 };
 	HGLRC hglrc{ nullptr };

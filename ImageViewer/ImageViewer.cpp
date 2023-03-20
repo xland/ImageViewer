@@ -89,7 +89,8 @@ void ImageViewer::Zoom(float scalNum)
 	if (scalNum == 1.f) {
 		ImageRect = SkRect::Make(image->imageInfo().bounds());
 	}
-	App::get()->bottomBar->btnCodes[6] = (const char*)u8"\ue6f8";
+	auto& code = std::get<1>(App::get()->bottomBar->btns[6]);
+	code = (const char*)u8"\ue6f8";
 	float w = ImageRect.width() * scalNum;
 	float h = ImageRect.height() * scalNum;
 	float x = ((float)win->clientWidth - w) / 2;
@@ -211,7 +212,8 @@ void ImageViewer::MakeImageViewer(std::string& path)
 		imageViewer->image = SkImage::MakeFromEncoded(skData);
 		app->imageViewer.reset(imageViewer);
 	}
-	app->bottomBar->btnCodes[6] = (const char*)u8"\ue6be";
+	auto& code = std::get<1>(app->bottomBar->btns[6]);
+	code = (const char*)u8"\ue6be";
 	app->mainWindow->Refresh();
 
 }

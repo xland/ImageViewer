@@ -19,6 +19,7 @@ namespace {
 	static unsigned languageIndex{ 0 };
 	const static std::map<std::string, std::vector<std::wstring>> languageDic {
 		{{"url"},{{L"打开URL路径"},{L"Open Image Url"}}},
+		{{"folder"},{{L"打开文件"},{L"Open Image File"}}},
 		{{"loading"},{{L"加载中，请稍后"},{L"Loading, please wait"}}},
 		{{"zoomIn"},{{L"放大"},{L"Zoom"}}},
 		{{"zoomOut"},{{L"缩小"},{L"Shrink"}}},
@@ -56,6 +57,10 @@ App::~App()
 {
 	delete iconFont;
 }
+void App::Resize(const unsigned& w, const unsigned& h)
+{
+	app->bottomBar->Resize(w, h);
+}
 void App::initIconFont() {
 	HRSRC resID = FindResource(hinstance, MAKEINTRESOURCE(IDR_BTNFONT1), L"BTNFONT");
 	if (resID == 0) {
@@ -71,10 +76,9 @@ void App::initIconFont() {
 	auto fontFace = SkTypeface::MakeFromData(fontData);
 	iconFont = new SkFont(fontFace);
 }
-std::wstring App::getText(std::string&& key)
+std::wstring App::getText(const char* key)
 {
-	auto _key = key;
-	return languageDic.at(_key)[languageIndex];
+	return languageDic.at(key)[languageIndex];
 }
 void App::initTextFont() {
 	auto fontFace = SkTypeface::MakeFromName("Microsoft YaHei", SkFontStyle::Normal());
@@ -89,8 +93,11 @@ void App::init(HINSTANCE hinstance) {
 	app->navigateBar = std::make_unique<NavigateBar>();
 	app->fileHelper = std::make_unique<FileHelper>();
 	app->imageDownloader = std::make_unique<ImageDownloader>();
+	app->tooltip = std::make_unique<ToolTip>();
 	app->mainWindow->Show();
-	RegToolTip(L"Allen", { 0,0,100,100 });
+
+	
+	//RegToolTip(L"Allen", { 0,0,100,100 });
 }
 App* App::get() {
 	return app;

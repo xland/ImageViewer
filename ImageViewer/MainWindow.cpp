@@ -39,6 +39,8 @@ MainWindow::MainWindow()
 	}
 	//initToolTip();
 	initSurface();
+
+
 }
 MainWindow::~MainWindow()
 {
@@ -137,6 +139,7 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		case WM_SIZE: {
 			clientWidth = LOWORD(lParam);
 			clientHeight = HIWORD(lParam);
+			App::get()->Resize(clientWidth, clientHeight);
 			return 0;
 		}
 		case WM_MOUSELEAVE: {
@@ -207,25 +210,21 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 //	SendMessage(hwndToolTip, TTM_TRACKACTIVATE, (WPARAM)FALSE, (LPARAM)&ti);
 //	ShowWindow(hwndToolTip, SW_HIDE);
 //}
-//void MainWindow::initToolTip()
-//{
-//	hwndToolTip = CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL,
-//		WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
-//		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-//		hwnd, NULL, App::get()->hinstance, NULL);
-//	if (!hwndToolTip)
-//	{
-//		return;
-//	}	
-//	ti.cbSize = sizeof(TOOLINFO);
-//	ti.uFlags = TTF_IDISHWND | TTF_TRACK | TTF_ABSOLUTE;
-//	ti.hwnd = hwnd;
-//	ti.hinst = App::get()->hinstance;
-//	ti.lpszText = (LPWSTR)L"提示提示";
-//	ti.uId = (UINT_PTR)hwnd;
-//	GetClientRect(hwnd, &ti.rect);
-//	SendMessage(hwndToolTip, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
-//}
+void MainWindow::initToolTip()
+{
+	hwndToolTip = CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		hwnd, NULL, App::get()->hinstance, NULL);
+	SetWindowPos(hwndToolTip, HWND_TOPMOST, 0, 0, 0, 0,SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+	TOOLINFO ti = { 0 };
+	ti.cbSize = sizeof(TOOLINFO);
+	ti.uFlags = TTF_SUBCLASS;
+	ti.hwnd = hwnd;
+	ti.hinst = App::get()->hinstance;
+	ti.lpszText = (LPWSTR)L"This is your tooltip string.";
+	GetClientRect(hwnd, &ti.rect);
+	SendMessage(hwndToolTip, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
+}
 void MainWindow::paint()
 {
 	auto surface = getSurface();
