@@ -54,6 +54,9 @@
     <ClCompile Include="ToolTip.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Loading.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainWindow.h">
@@ -99,6 +102,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ToolTip.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Loading.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

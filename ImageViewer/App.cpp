@@ -10,6 +10,7 @@
 #include "FileHelper.h"
 #include "ImageDownloader.h"
 #include "ToolTip.h"
+#include "Loading.h"
 namespace {
 	static App* app{ nullptr };
 	/// <summary>
@@ -98,8 +99,9 @@ void App::init(HINSTANCE hinstance) {
 	app->fileHelper = std::make_unique<FileHelper>();
 	app->imageDownloader = std::make_unique<ImageDownloader>();
 	app->tooltip = std::make_unique<ToolTip>();
+	app->loading = std::make_unique<Loading>();
 	app->mainWindow->Show();
-
+	app->loading->Show();
 	
 	//RegToolTip(L"Allen", { 0,0,100,100 });
 }
@@ -118,6 +120,7 @@ void App::Paint(SkCanvas* canvas)
 	navigateBar->Paint(canvas);
 	bottomBar->Paint(canvas);
 	tip->Paint(canvas);
+	loading->Paint(canvas);
 }
 void App::CheckMouseEnter(int x, int y)
 {

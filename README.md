@@ -7,7 +7,7 @@ An image viewer powered by Skia.
 # Features
 
 - Support most of the images formats : png, jpeg, gif ...
-- Image zoom
+- Image scale (mouse wheel)
 - Image rotate
 - Drag to move image
 - Previous image and next image in a directory
@@ -16,7 +16,7 @@ An image viewer powered by Skia.
 - Image save to disk
 - Multi language support
 - Very fast
-- Low memory and CPU useage
+- Low memory and CPU/GPU useage
 - Only one executeble file less than 6M
 
 # In Progress

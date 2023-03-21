@@ -14,6 +14,7 @@ class Tip;
 class FileHelper;
 class ImageDownloader;
 class ToolTip;
+class Loading;
 class App
 {
 public:	
@@ -36,6 +37,7 @@ public:
 	std::unique_ptr<FileHelper> fileHelper;
 	std::unique_ptr<ImageDownloader> imageDownloader;
 	std::unique_ptr<ToolTip> tooltip;
+	std::unique_ptr<Loading> loading;
 	SkFont* iconFont;
 	SkFont* textFont;
 	HINSTANCE hinstance;

@@ -149,6 +149,7 @@
     <ClCompile Include="GifViewer.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="ImageViewer.cpp" />
+    <ClCompile Include="Loading.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="NavigateBar.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="GifViewer.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="ImageViewer.h" />
+    <ClInclude Include="Loading.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="NavigateBar.h" />
     <ClInclude Include="resource.h" />
