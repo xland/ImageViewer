@@ -12,10 +12,19 @@ ToolTip::~ToolTip()
 {
 
 }
+void ToolTip::SetToolTipText(unsigned id, const char* key)
+{
+    if (tooltipInfos.contains(id)) {
+        auto& ti = tooltipInfos.at(id).second;
+        auto tipText = App::getText(key);
+        ti.lpszText = (LPWSTR)tipText.c_str();
+        SendMessage(hwnd, TTM_UPDATETIPTEXT, 0, (LPARAM)(LPTOOLINFO)&ti);
+    }
+}
 void ToolTip::RegToolTip(const char* key, RECT rect,unsigned id)
 {
-    if (tooltipInfos.contains(key)) {
-        auto ti = tooltipInfos.at(key);
+    if (tooltipInfos.contains(id)) {
+        auto& ti = tooltipInfos.at(id).second;
         ti.rect = rect;
         SendMessage(hwnd, TTM_NEWTOOLRECT, 0, (LPARAM)(LPTOOLINFO)&ti);
     }
@@ -30,7 +39,7 @@ void ToolTip::RegToolTip(const char* key, RECT rect,unsigned id)
         auto tipText = App::getText(key);
         ti.lpszText = (LPWSTR)tipText.c_str();
         ti.rect = rect;
-        tooltipInfos.insert({ key, ti });
+        tooltipInfos.insert({ id,{ key, ti } });
         SendMessage(hwnd, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
     }
     

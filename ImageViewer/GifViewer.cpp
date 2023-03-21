@@ -8,34 +8,34 @@
 #include <urlmon.h>
 namespace {
     std::mutex locker;
-    bool copy_to(SkBitmap* dst, SkColorType dstColorType, const SkBitmap& src) {
-        SkPixmap srcPM;
-        if (!src.peekPixels(&srcPM)) {
-            return false;
-        }
-
-        SkBitmap    tmpDst;
-        SkImageInfo dstInfo = srcPM.info().makeColorType(dstColorType);
-        if (!tmpDst.setInfo(dstInfo)) {
-            return false;
-        }
-
-        if (!tmpDst.tryAllocPixels()) {
-            return false;
-        }
-
-        SkPixmap dstPM;
-        if (!tmpDst.peekPixels(&dstPM)) {
-            return false;
-        }
-
-        if (!srcPM.readPixels(dstPM)) {
-            return false;
-        }
-
-        dst->swap(tmpDst);
-        return true;
+bool copy_to(SkBitmap* dst, SkColorType dstColorType, const SkBitmap& src) {
+    SkPixmap srcPM;
+    if (!src.peekPixels(&srcPM)) {
+        return false;
     }
+
+    SkBitmap    tmpDst;
+    SkImageInfo dstInfo = srcPM.info().makeColorType(dstColorType);
+    if (!tmpDst.setInfo(dstInfo)) {
+        return false;
+    }
+
+    if (!tmpDst.tryAllocPixels()) {
+        return false;
+    }
+
+    SkPixmap dstPM;
+    if (!tmpDst.peekPixels(&dstPM)) {
+        return false;
+    }
+
+    if (!srcPM.readPixels(dstPM)) {
+        return false;
+    }
+
+    dst->swap(tmpDst);
+    return true;
+}
 }
 GifViewer::GifViewer()
 {
@@ -46,9 +46,6 @@ GifViewer::~GifViewer()
     running = false;
     if (decodeThread.joinable()) {
         decodeThread.join();
-    }
-    if (animateThreadResult.valid()) {
-        animateThreadResult.wait();
     }    
 }
 void GifViewer::Zoom(float scalNum)
@@ -74,10 +71,7 @@ void GifViewer::Rotate()
 }
 void GifViewer::SaveImage(std::string& path)
 {
-    if (!animateThreadResult.valid()) {
-        //todo
-        return;
-    }
+    if (!frameImage) return;
     auto pathSrc = ConvertWideToUtf8(App::get()->fileHelper->currentPath.wstring());
     auto data = SkData::MakeFromFileName(pathSrc.c_str());
     SkFILEWStream fileStream(path.c_str());

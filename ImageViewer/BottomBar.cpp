@@ -52,9 +52,15 @@ void BottomBar::CheckMouseDown(int mouseX, int mouseY)
 	}
 	else if (mouseEnterIndex == 4) {
 		App::get()->imageViewer->Zoom(0.98f);
+		auto& code = std::get<1>(btns[6]);
+		code = (const char*)u8"\ue6f8";
+		App::get()->tooltip->SetToolTipText(106, "autoSize");
 	}
 	else if (mouseEnterIndex == 5) {
 		App::get()->imageViewer->Zoom(1.02f);
+		auto& code = std::get<1>(btns[6]);
+		code = (const char*)u8"\ue6f8";
+		App::get()->tooltip->SetToolTipText(106, "autoSize");
 	}
 	else if (mouseEnterIndex == 6) {
 		auto& code = std::get<1>(btns[6]);
@@ -62,15 +68,19 @@ void BottomBar::CheckMouseDown(int mouseX, int mouseY)
 		{
 			code = (const char*)u8"\ue6be";
 			App::get()->imageViewer->AutoSize();
+			App::get()->tooltip->SetToolTipText(106, "originSize");
 		}
 		else
 		{
 			App::get()->imageViewer->Zoom(1.f);
+			code = (const char*)u8"\ue6f8";
+			App::get()->tooltip->SetToolTipText(106, "autoSize");
 		}
 	}
 	else if (mouseEnterIndex == 7) {
 		auto& code = std::get<1>(btns[6]);
 		code = (const char*)u8"\ue6be";
+		App::get()->tooltip->SetToolTipText(106, "originSize");
 		App::get()->imageViewer->Rotate();
 	}
 	else if (mouseEnterIndex == 8) {

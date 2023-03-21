@@ -17,7 +17,6 @@ public:
 private:
 	std::shared_ptr<SkBitmap> frameImage;
 	bool running{ true };
-	std::shared_future<void> animateThreadResult;
 	std::thread decodeThread;
 };
 

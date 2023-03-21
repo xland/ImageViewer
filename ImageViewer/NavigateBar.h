@@ -9,14 +9,16 @@ public:
 	void Paint(SkCanvas* canvas);
 	void CheckMouseEnter(int mouseX, int mouseY);
 	void CheckMouseDown(int mouseX, int mouseY);
+	void Resize(const unsigned& w, const unsigned& h);
 private:
-	bool isInsideCircle(int cx, int cy, int r, int x, int y);
+	bool isInsideCircle(SkPoint& circleCenter, int x, int y);
 private:
 	float r = 35.f;
-	float w = 175.f;
-	float x1 = w - r;
-	float x2 = 0.f;
-	float y = 0.f;
+	float regionW = 175.f;
+	SkPoint leftCircleCenter;
+	SkPoint rightCircleCenter;
+	SkRect leftButtonRect;
+	SkRect rightButtonRect;
 	bool mouseEnterLeft{ false };
 	bool mouseEnterRight{ false };
 };

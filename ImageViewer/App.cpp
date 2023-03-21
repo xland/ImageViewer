@@ -34,7 +34,8 @@ namespace {
 		{{"revoke"},{{L"消息已被撤回"},{L"The message has been revoked"}}},
 		{{"Recognize"},{{L"识别文字"},{L"Recognize text"}}},
 		{{"previousOne"},{{L"上一张"},{L"Previous"}}},
-		{{"nextOne"},{{L"下一张"},{L"Next"}}}
+		{{"nextOne"},{{L"下一张"},{L"Next"}}},
+		{{"none"},{{L""},{L""}}}
 	};
 }
 App::App(HINSTANCE hinstance):
@@ -60,6 +61,7 @@ App::~App()
 void App::Resize(const unsigned& w, const unsigned& h)
 {
 	app->bottomBar->Resize(w, h);
+	app->navigateBar->Resize(w, h);
 }
 void App::initIconFont() {
 	HRSRC resID = FindResource(hinstance, MAKEINTRESOURCE(IDR_BTNFONT1), L"BTNFONT");
