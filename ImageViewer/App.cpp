@@ -35,6 +35,8 @@ namespace {
 		{{"Recognize"},{{L"识别文字"},{L"Recognize text"}}},
 		{{"previousOne"},{{L"上一张"},{L"Previous"}}},
 		{{"nextOne"},{{L"下一张"},{L"Next"}}},
+		{{"unrealized"},{{L"功能未实现"},{L"Function unrealized"}}},
+		{{"SysInfo"},{{L"系统提示"},{L"System Information"}}},
 		{{"none"},{{L""},{L""}}}
 	};
 }

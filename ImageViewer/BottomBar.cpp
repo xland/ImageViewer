@@ -84,7 +84,7 @@ void BottomBar::CheckMouseDown(int mouseX, int mouseY)
 		App::get()->imageViewer->Rotate();
 	}
 	else if (mouseEnterIndex == 8) {
-		App::get()->fileHelper->Save();;
+		App::get()->fileHelper->Save();
 	}
 }
 void BottomBar::CheckMouseEnter(int x, int y)

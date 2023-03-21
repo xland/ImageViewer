@@ -84,6 +84,7 @@ void ImageViewer::initMaskShader()
 }
 void ImageViewer::Zoom(float scalNum)
 {
+	
 	if (!image) return;
 	auto win = App::get()->mainWindow.get();
 	if (scalNum == 1.f) {
@@ -100,6 +101,7 @@ void ImageViewer::Zoom(float scalNum)
 }
 void ImageViewer::Rotate()
 {
+	//todo 1:1之后再旋转有点问题
 	IsAutoSize = true;
 	SkBitmap bitmap;
 	bitmap.allocN32Pixels(image->height(), image->width());

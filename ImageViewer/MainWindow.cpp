@@ -11,6 +11,8 @@
 #include "Converter.h"
 #include "App.h"
 #include "ImageViewer.h"
+#include "FileHelper.h"
+#include <Shlobj.h>
 
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -125,6 +127,69 @@ LRESULT CALLBACK  MainWindow::winProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		case WM_NCCALCSIZE: 
 		{
 			return DefWindowProc(hwnd, msg, wParam, lParam);			
+		}
+		case WM_COMMAND:
+		{
+			auto menuId = LOWORD(wParam);
+			if (menuId == 1001) {
+				auto path = App::get()->fileHelper->currentPath.wstring();
+				int size = sizeof(DROPFILES) + ((lstrlenW(path.c_str()) + 2) * sizeof(WCHAR));
+				HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, size);
+				if (!hGlobal) return 0;
+				DROPFILES* df = (DROPFILES*)GlobalLock(hGlobal);
+				if (!df) return 0;
+				ZeroMemory(df, size);
+				df->pFiles = sizeof(DROPFILES);
+				df->fWide = TRUE;
+				LPWSTR ptr = (LPWSTR)(df + 1);
+				lstrcpyW(ptr, path.c_str());
+				GlobalUnlock(hGlobal);
+				OpenClipboard(NULL);
+				EmptyClipboard();
+				SetClipboardData(CF_HDROP, hGlobal);
+				CloseClipboard();
+				return 0;
+			}
+			else if (menuId == 1002) {
+				App::get()->fileHelper->Save();
+			}
+			else if (menuId == 1003) {
+				MessageBox(hwnd,
+					App::get()->getText("unrealized").c_str(),
+					App::get()->getText("SysInfo").c_str(),
+					MB_ICONWARNING | MB_OK);
+			}
+			else if (menuId == 1004) {
+				App::get()->fileHelper->ShowPrev();
+			}
+			else if (menuId == 1005) {
+				App::get()->fileHelper->ShowNext();
+			}
+			else if (menuId == 1006) {
+				MessageBox(hwnd,
+					App::get()->getText("unrealized").c_str(),
+					App::get()->getText("SysInfo").c_str(),
+					MB_ICONWARNING | MB_OK);
+			}
+			return 0;
+		}
+		case WM_RBUTTONDOWN:
+		{
+			POINT point;
+			point.x = GET_X_LPARAM(lParam);
+			point.y = GET_Y_LPARAM(lParam);
+			if (point.y > clientHeight - bottomBarHeight || !App::get()->imageViewer) return 0;
+			ClientToScreen(hwnd, &point);
+			HMENU hPopupMenu = CreatePopupMenu();			
+			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, 1001, App::get()->getText("copy").c_str());
+			InsertMenu(hPopupMenu, 1, MF_BYPOSITION | MF_STRING, 1002, App::get()->getText("download").c_str());
+			InsertMenu(hPopupMenu, 2, MF_BYPOSITION | MF_STRING, 1003, App::get()->getText("Recognize").c_str());
+			InsertMenu(hPopupMenu, 3, MF_BYPOSITION | MF_STRING, 1004, App::get()->getText("previousOne").c_str());
+			InsertMenu(hPopupMenu, 4, MF_BYPOSITION | MF_STRING, 1005, App::get()->getText("nextOne").c_str());
+			InsertMenu(hPopupMenu, 5, MF_BYPOSITION | MF_STRING, 1006, App::get()->getText("transfer").c_str());
+			SetForegroundWindow(hwnd);
+			TrackPopupMenu(hPopupMenu, TPM_TOPALIGN | TPM_LEFTALIGN, point.x, point.y, 0, hwnd, NULL);
+			return 0;
 		}
 		case WM_GETMINMAXINFO: 
 		{
