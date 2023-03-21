@@ -14,14 +14,12 @@ An image viewer powered by Skia.
 - Image watermark
 - Image from http/https url
 - Image save to disk
+- Multi language support
 - Very fast
 - Low memory and CPU useage
 - Only one executeble file less than 6M
 
 # In Progress
 
-- [ ] Context Menu
-- [ ] Multi Language
 - [ ] Loading Tip
-- [ ] OCR Support
 - [ ] Mac OS Support ( Only Windows Just Now )
