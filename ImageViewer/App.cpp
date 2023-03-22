@@ -38,6 +38,7 @@ namespace {
 		{{"nextOne"},{{L"下一张"},{L"Next"}}},
 		{{"unrealized"},{{L"功能未实现"},{L"Function unrealized"}}},
 		{{"downloadError"},{{L"图片下载失败"},{L"Image download error"}}},
+		{{"loadImgFirst"},{{L"请先加载图片"},{L"Please load Image first"}}},
 		{{"SysInfo"},{{L"系统提示"},{L"System Information"}}},
 		{{"none"},{{L""},{L""}}}
 	};

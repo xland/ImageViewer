@@ -37,14 +37,18 @@ void BottomBar::Resize(const unsigned& w, const unsigned& h)
 }
 void BottomBar::CheckMouseDown(int mouseX, int mouseY)
 {
-	if (mouseEnterIndex == -1) return;
+	if (mouseEnterIndex == -1) return;	
 	else if (mouseEnterIndex == 0) {
 		App::get()->imageDownloader->ShowUrlDialog();
 	}
 	else if (mouseEnterIndex == 1) {
 		App::get()->fileHelper->Open();
 	}
-	else if (mouseEnterIndex == 2) {
+	if (!App::get()->imageViewer) {
+		App::get()->tip->Show(App::getText("loadImgFirst"));
+		return;
+	}
+	if (mouseEnterIndex == 2) {		
 		App::get()->fileHelper->ShowPrev();
 	}
 	else if (mouseEnterIndex == 3) {
@@ -84,6 +88,7 @@ void BottomBar::CheckMouseDown(int mouseX, int mouseY)
 		App::get()->imageViewer->Rotate();
 	}
 	else if (mouseEnterIndex == 8) {
+		if (!App::get()->imageViewer) return;
 		App::get()->fileHelper->Save();
 	}
 }

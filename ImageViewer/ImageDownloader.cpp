@@ -9,6 +9,7 @@
 #include "ImageViewer.h"
 #include "Converter.h"
 #include "Loading.h"
+#include "FileHelper.h"
 
 namespace {
 
@@ -151,6 +152,7 @@ void ImageDownloader::DownloadImage(std::wstring&& url)
 		if (path.empty()) {
 			//todo
 		}
+		App::get()->fileHelper->currentPath = std::filesystem::path(path);
 		App::get()->loading->Hide();
 		ImageViewer::MakeImageViewer(path);
 	});
