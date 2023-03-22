@@ -21,4 +21,5 @@ An image viewer powered by Skia.
 
 # In Progress
 
+- [ ] CMake Support ( Only VisualStudio Just Now )
 - [ ] Mac OS Support ( Only Windows Just Now )
