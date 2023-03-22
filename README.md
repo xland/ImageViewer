@@ -21,5 +21,4 @@ An image viewer powered by Skia.
 
 # In Progress
 
-- [ ] Loading Tip
 - [ ] Mac OS Support ( Only Windows Just Now )
