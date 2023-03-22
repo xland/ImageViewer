@@ -83,8 +83,7 @@ void ImageViewer::initMaskShader()
 	shader = mask->makeShader(SkTileMode::kRepeat, SkTileMode::kRepeat, ImageOption, matrix);
 }
 void ImageViewer::Zoom(float scalNum)
-{
-	
+{	
 	if (!image) return;
 	auto win = App::get()->mainWindow.get();
 	if (scalNum == 1.f) {
@@ -101,7 +100,6 @@ void ImageViewer::Zoom(float scalNum)
 }
 void ImageViewer::Rotate()
 {
-	//todo 1:1之后再旋转有点问题
 	IsAutoSize = true;
 	SkBitmap bitmap;
 	bitmap.allocN32Pixels(image->height(), image->width());
@@ -111,6 +109,7 @@ void ImageViewer::Rotate()
 	canvas.drawImage(image, 0.f, 0.f);
 	bitmap.setImmutable();
 	image = bitmap.asImage();
+	ImageRect = SkRect::Make(image->imageInfo().bounds());
 	App::get()->mainWindow->Refresh();
 }
 void ImageViewer::CaculatePosition(sk_sp<SkImage> image)

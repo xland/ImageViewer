@@ -12,8 +12,6 @@
 #include "FileHelper.h"
 
 namespace {
-
-	//todo 输入框怎么是个多行文本框
     BOOL CALLBACK PromptProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam) {
         BOOL result = FALSE;
         switch (message)
