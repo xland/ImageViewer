@@ -37,6 +37,7 @@ namespace {
 		{{"previousOne"},{{L"上一张"},{L"Previous"}}},
 		{{"nextOne"},{{L"下一张"},{L"Next"}}},
 		{{"unrealized"},{{L"功能未实现"},{L"Function unrealized"}}},
+		{{"downloadError"},{{L"图片下载失败"},{L"Image download error"}}},
 		{{"SysInfo"},{{L"系统提示"},{L"System Information"}}},
 		{{"none"},{{L""},{L""}}}
 	};
@@ -101,7 +102,6 @@ void App::init(HINSTANCE hinstance) {
 	app->tooltip = std::make_unique<ToolTip>();
 	app->loading = std::make_unique<Loading>();
 	app->mainWindow->Show();
-	app->loading->Show();
 	
 	//RegToolTip(L"Allen", { 0,0,100,100 });
 }

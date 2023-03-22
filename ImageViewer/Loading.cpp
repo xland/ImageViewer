@@ -46,11 +46,11 @@ void Loading::Paint(SkCanvas* canvas)
 	auto font = App::get()->iconFont;
 	font->setSize(42);
 	SkPaint paint;
-	paint.setColor(ColorBlack);
+	paint.setColor(GetColor(100,100,100));
     canvas->save(); 
     auto x = (float)win->clientWidth / 2;
     auto y = ((float)win->clientHeight-(float)win->bottomBarHeight) / 2;
     canvas->rotate(roateAngle,x,y);
-    canvas->drawString((const char*)u8"\ue891", x-20, y+15, *font, paint);
+    canvas->drawString((const char*)u8"\ue891", x-20, y+16, *font, paint);
     canvas->restore();
 }

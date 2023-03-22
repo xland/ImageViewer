@@ -8,6 +8,7 @@
 #include <future>
 #include "ImageViewer.h"
 #include "Converter.h"
+#include "Loading.h"
 
 namespace {
 
@@ -66,10 +67,10 @@ namespace {
 		}
 		STDMETHOD(OnProgress)(ULONG ulProgress,ULONG ulProgressMax,ULONG ulStatusCode,LPCWSTR wszStatusText)
 		{
-			float ps = 0;
-			if (ulProgressMax != 0) {
-				ps = (float)ulProgress * 100 / ulProgressMax;
-			}
+			//float ps = 0;
+			//if (ulProgressMax != 0) {
+			//	ps = (float)ulProgress * 100 / ulProgressMax;
+			//}
 			return App::get()->imageDownloader->abortDownloadFlag ? E_ABORT : E_NOTIMPL;
 		}
 		STDMETHOD(OnStopBinding)(HRESULT hresult,LPCWSTR szError)
@@ -114,7 +115,7 @@ ImageDownloader::~ImageDownloader()
 }
 void ImageDownloader::ShowUrlDialog()
 {
-	bool flag = downloadThread.joinable();
+	AbortDownload();
 	BOOL result = DialogBox(App::get()->hinstance, MAKEINTRESOURCE(IDD_DIALOG1), App::get()->mainWindow->hwnd, (DLGPROC)PromptProc);
 }
 void ImageDownloader::AbortDownload()
@@ -128,14 +129,29 @@ void ImageDownloader::DownloadImage(std::wstring&& url)
 	AbortDownload();
 	imageUrl = url;
 	abortDownloadFlag = false;
+	App::get()->loading->Show();
 	downloadThread = std::thread([this]() {
 		DownloadStatus ds;
 		LPTSTR cacheFilePath = new TCHAR[MAX_PATH];
-		URLDownloadToCacheFile(nullptr, this->imageUrl.c_str(), cacheFilePath, MAX_PATH, 0, &ds);
+		const HRESULT hr = URLDownloadToCacheFile(nullptr, this->imageUrl.c_str(), cacheFilePath, URLOSTRM_USECACHEDCOPY, 0, &ds);
+		if (FAILED(hr))
+		{
+			delete[] cacheFilePath;
+			App::get()->loading->Hide();
+			MessageBox(App::get()->mainWindow->hwnd,
+				App::get()->getText("downloadError").c_str(),
+				App::get()->getText("SysInfo").c_str(),
+				MB_ICONWARNING | MB_OK);
+			return;
+		}
 		std::wstringstream ss;
 		ss << cacheFilePath;
 		delete[] cacheFilePath;
 		auto path = ConvertWideToUtf8(ss.str());
+		if (path.empty()) {
+			//todo
+		}
+		App::get()->loading->Hide();
 		ImageViewer::MakeImageViewer(path);
 	});
 }
