@@ -4,6 +4,10 @@ An image viewer powered by Skia.
 
 ![](./doc/app.png)
 
+# Download
+
+[ImageViewer.7z](https://github.com/xland/ImageViewer/releases/download/1.0.0/ImageViewer.7z)
+
 # Features
 
 - Support most of the images formats : png, jpeg, gif ...
