@@ -8,7 +8,7 @@
 #include "Color.h"
 #include <math.h>
 #include "App.h"
-
+std::mutex locker;
 ImageViewer::ImageViewer()
 {
 	initMaskShader();
@@ -42,8 +42,11 @@ void ImageViewer::CheckMouseEnter(int x, int y)
 		auto win = App::get()->mainWindow.get();
 		int edge = 88;
 		if (w + x1 < edge || h + y1 < edge || win->clientWidth - x1 < edge || win->clientHeight-win->bottomBarHeight - y1 < edge) return;
+		std::unique_lock guard(locker);
+		IsAutoSize = false;
+		IsAutoPosition = false;
 		ImageRect.setXYWH(x1, y1, w, h);
-		isCustomPosition = true;
+		guard.unlock();
 		win->Refresh();
 		return;
 	}
@@ -58,8 +61,10 @@ void ImageViewer::CheckMouseEnter(int x, int y)
 void ImageViewer::AutoSize()
 {
 	if (!image) return;
-	IsAutoSize = true;
-	isCustomPosition = false;
+	std::unique_lock guard(locker);
+	IsAutoPosition = true;
+	SetAutoSizeRect();
+	guard.unlock();
 	App::get()->mainWindow->Refresh();
 }
 void ImageViewer::initMaskShader()
@@ -85,22 +90,25 @@ void ImageViewer::initMaskShader()
 void ImageViewer::Zoom(float scalNum)
 {	
 	if (!image) return;
-	auto win = App::get()->mainWindow.get();
+	auto win = App::get()->mainWindow.get(); 
+	std::unique_lock guard(locker);
+	IsAutoSize = false;
 	if (scalNum == 1.f) {
+		IsAutoPosition = true;
 		ImageRect = SkRect::Make(image->imageInfo().bounds());
-	}	
+	}
 	float w = ImageRect.width() * scalNum;
 	float h = ImageRect.height() * scalNum;
-	float x = ((float)win->clientWidth - w) / 2;
-	float y = ((float)win->clientHeight - (float)win->bottomBarHeight - h) / 2;
-	ImageRect.setXYWH(x, y, w, h);
-	isCustomPosition = false;
-	IsAutoSize = false;
-	App::get()->mainWindow->Refresh();
+	ImageRect.setXYWH(ImageRect.x(), ImageRect.y(), w, h);
+	guard.unlock();
+	win->Refresh();
 }
 void ImageViewer::Rotate()
 {
-	IsAutoSize = true;
+	//todo 1:1之后再旋转有问题位置错误
+	//todo 移动之后再旋转会变成1:1
+	//todo 放大之后再旋转，放大比率会变成1:1
+	auto win = App::get()->mainWindow.get();
 	SkBitmap bitmap;
 	bitmap.allocN32Pixels(image->height(), image->width());
 	SkCanvas canvas(bitmap);
@@ -108,76 +116,88 @@ void ImageViewer::Rotate()
 	canvas.rotate(-90.f);
 	canvas.drawImage(image, 0.f, 0.f);
 	bitmap.setImmutable();
+	std::unique_lock guard(locker);
 	image = bitmap.asImage();
 	ImageRect = SkRect::Make(image->imageInfo().bounds());
+	IsAutoSize = true;
+	IsAutoPosition = true;
+	guard.unlock();
 	App::get()->mainWindow->Refresh();
 }
-void ImageViewer::CaculatePosition(sk_sp<SkImage> image)
-{ 	
+void ImageViewer::SetAutoSizeRect()
+{
 	auto win = App::get()->mainWindow.get();
+	IsAutoSize = true;
 	auto clientWidth = (float)win->clientWidth;
 	auto clientHeight = (float)(win->clientHeight - win->bottomBarHeight);
-	if (IsAutoSize) {
-		auto imageWidth = (float)image->width();
-		auto imageHeight = (float)image->height();
-		float x = 0.f, y = 0.f, w = 0.f, h = 0.f;
-		if (imageHeight > clientHeight && imageWidth > clientWidth)
-		{
-			auto heightRatio = imageHeight / clientHeight;
-			auto widthRatio = imageWidth / clientWidth;
-			if (heightRatio > widthRatio) {
-				h = clientHeight;
-				w = imageWidth / heightRatio;
-				y = 0.f;
-				x = (clientWidth - w) / 2;
-			}
-			else
-			{
-				h = imageHeight / widthRatio;
-				w = clientWidth;
-				y = (clientHeight - h) / 2;
-				x = 0.f;
-			}
-		}
-		else if (imageHeight > clientHeight && imageWidth <= clientWidth)
-		{
-			float heightRatio = imageHeight / clientHeight;
+	auto imageWidth = (float)image->width();
+	auto imageHeight = (float)image->height();
+	float x = 0.f, y = 0.f, w = 0.f, h = 0.f;
+	if (imageHeight > clientHeight && imageWidth > clientWidth)
+	{
+		auto heightRatio = imageHeight / clientHeight;
+		auto widthRatio = imageWidth / clientWidth;
+		if (heightRatio > widthRatio) {
 			h = clientHeight;
 			w = imageWidth / heightRatio;
 			y = 0.f;
 			x = (clientWidth - w) / 2;
 		}
-		else if (imageHeight <= clientHeight && imageWidth > clientWidth) {
-			auto widthRatio = imageWidth / clientWidth;
+		else
+		{
 			h = imageHeight / widthRatio;
 			w = clientWidth;
 			y = (clientHeight - h) / 2;
 			x = 0.f;
 		}
-		else
-		{
-			x = (clientWidth - imageWidth) / 2;
-			y = (clientHeight - imageHeight) / 2;
-			w = imageWidth;
-			h = imageHeight;
-		}
-		ImageRect.setXYWH(x, y, w, h);
+	}
+	else if (imageHeight > clientHeight && imageWidth <= clientWidth)
+	{
+		float heightRatio = imageHeight / clientHeight;
+		h = clientHeight;
+		w = imageWidth / heightRatio;
+		y = 0.f;
+		x = (clientWidth - w) / 2;
+	}
+	else if (imageHeight <= clientHeight && imageWidth > clientWidth) {
+		auto widthRatio = imageWidth / clientWidth;
+		h = imageHeight / widthRatio;
+		w = clientWidth;
+		y = (clientHeight - h) / 2;
+		x = 0.f;
 	}
 	else
 	{
-		float w = ImageRect.width();
-		float h = ImageRect.height();
-		float x = ((float)win->clientWidth - w) / 2;
-		float y = ((float)win->clientHeight - (float)win->bottomBarHeight - h) / 2;
-		ImageRect.setXYWH(x, y, w, h);
-	}	
+		x = (clientWidth - imageWidth) / 2;
+		y = (clientHeight - imageHeight) / 2;
+		w = imageWidth;
+		h = imageHeight;
+	}
+	ImageRect.setXYWH(x, y, w, h);
+}
+void ImageViewer::SetCustomSizeRect()
+{ 	
+	auto win = App::get()->mainWindow.get();
+	auto clientWidth = (float)win->clientWidth;
+	auto clientHeight = (float)(win->clientHeight - win->bottomBarHeight);
+	auto w = ImageRect.width();
+	auto h = ImageRect.height();
+	float x = (clientWidth - w) / 2;
+	float y = (clientHeight - h) / 2;
+	ImageRect.setXYWH(x, y, w, h);
 }
 void ImageViewer::Paint(SkCanvas* canvas)
 {
-	if (!isCustomPosition) {
-		CaculatePosition(image); 
-	}	
+	std::unique_lock guard(locker);
+	if (IsAutoSize) {
+		SetAutoSizeRect();
+	}
+	else if(IsAutoPosition)
+	{
+		SetCustomSizeRect();
+	}
 	canvas->drawImageRect(image, ImageRect, ImageOption);
+	guard.unlock();
 	SkPaint paint;	
 	paint.setShader(shader);
 	canvas->drawPaint(paint);

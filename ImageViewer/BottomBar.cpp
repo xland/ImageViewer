@@ -40,10 +40,13 @@ void BottomBar::CheckMouseDown(int mouseX, int mouseY)
 	if (mouseEnterIndex == -1) return;	
 	else if (mouseEnterIndex == 0) {
 		App::get()->imageDownloader->ShowUrlDialog();
+		return;
 	}
 	else if (mouseEnterIndex == 1) {
 		App::get()->fileHelper->Open();
+		return;
 	}
+
 	if (!App::get()->imageViewer) {
 		App::get()->tip->Show(App::getText("loadImgFirst"));
 		return;

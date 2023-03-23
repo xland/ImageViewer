@@ -128,6 +128,7 @@ void ImageDownloader::DownloadImage(std::wstring&& url)
 	AbortDownload();
 	imageUrl = url;
 	abortDownloadFlag = false;
+	App::get()->imageViewer.reset();
 	App::get()->loading->Show();
 	downloadThread = std::thread([this]() {
 		DownloadStatus ds;

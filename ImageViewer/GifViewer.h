@@ -11,7 +11,6 @@ public:
 	~GifViewer();
 	void Paint(SkCanvas* canvas);
 	void DecodeGif(std::unique_ptr<SkCodec> codec);
-	void Zoom(float scalNum) override;	
 	void Rotate() override;
 	void SaveImage(std::string& path) override;
 private:
