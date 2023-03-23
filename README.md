@@ -6,7 +6,7 @@ An image viewer powered by Skia.
 
 # Download
 
-[ImageViewer.7z](https://github.com/xland/ImageViewer/releases/)
+[Release](https://github.com/xland/ImageViewer/releases/)
 
 # Features
 
